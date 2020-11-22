@@ -3,12 +3,13 @@ enemyFound(EnemyName) :-
 	assert(amountofenemy(1)),
 	assert(enemy_status(Name,Health,Exp)). /*Gatau deh pokoknya kayak nyetel enemy yang ada*/
 	write('Fight like a knight, or run like a coward. Your choice.'),nl.
-	write('Choose.'),
+	write('Choose.'), nl,
 	write('- fight.'), nl,
 	write('- run.'), nl.
 
 fight :-
-    inbattle(_,Player,1),
+    retract(inbattle(_,_,_),
+    assert(inbattle(_,_,1),
     assert(playerturn(1)). /*Dikasih kesempatan lebih duluan player*/
     assert(enemyturn(0)).
     /*Kalo misal belakangnya 1, artinya lagi dalam battle*/
@@ -65,7 +66,7 @@ use_potion :-
 /*Hubungan potionnya ntar sama yang disimpen*/
 
 attack :-
-	inbattle(_,Player,0), /*Kalo misal ga lagi dalam pertarungan
+	inbattle(_,Player,0), /*Kalo misal ga lagi dalam pertarungan*/
 	write('Command cannot be used because you are not in a battle.'),nl,!.
 	
 attack :-
@@ -81,8 +82,9 @@ attack :-
     retract(enemy_status(Name,Health,Exp)),
     NewHealth is Health-Damage,
     NewExp is Exp-Damage, /*Masih ngasal banget yang pengurangannya*/
-    assert(enemy_status(Name,NewHealth,NewExp)).
-    whichTurn.
+    assert(enemy_status(Name,NewHealth,NewExp)),
+    check_current_state. /*Kalo misal belum kalah belum menang, yaudah lanjut terus*/
+    /*Kayak milih turnnya terus*/
 
 useInventory :-
 	check_amount_of_inventory(X),
@@ -117,6 +119,9 @@ lose :-
     write('YOU LOSEEEEEEE!'),nl.
     /*write...*/
 
+check_current_state :-
+/*Gatau deh dipake ngga*/
+
 checklose:-
     player_status(IDName,0,_).
 
@@ -137,11 +142,9 @@ runfail:-
     fight.
 
 runsuccess:-
-    retract(inbattle(_,Player,1),
-    retract(amountofenemy(1)),
+    retract(amountofenemy(_)),
     write('You successfully run from the enemy.'),
-    assert(inbattle(_,Player,0),
-    assert(amountofenemy(0)). /*Dibikin jadi 0 artinya dia keluar dari battle*/
+    assert(amountofenemy(0)).
 
 /*Inget selalu dicek lagi inBattle apa ngga*/
 /*Cek diri sendiri, enemy, boss enemy, kalo udah selesai ya menang*/
@@ -149,3 +152,5 @@ runsuccess:-
 /*Ngecek enemy dead*/
 /*Damagenya berdasarkan inventory*/
 /*Perlevelan gimana ya*/
+/*Kayaknya ntar bakal pake halt di akhir*/
+/*Mau cari tau arti reset apaan*/
