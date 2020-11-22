@@ -88,10 +88,10 @@ lose :-
     /*write...*/
 
 checklose:-
-    statePlayer(IDName,0,_).
+    player_status(IDName,0,_).
 
 checkwin :-
-    stateEnemy(BossEnemy,0,_).
+    enemy_status(BossEnemy,0,_).
 
 enemy_attack:-
 
@@ -115,10 +115,3 @@ runsuccess:-
 /*Ada bagian turn musuh*/
 /*Ngecek enemy dead*/
 /*Damagenya berdasarkan inventory*/
-
-/*---------------------------------*/
-/* Buat variables */
-
-/*inBattle(Enemy,Player)*/
-/*stateEnemy(Enemy,XP,Health)*/
-/*statePlayer(Name,XP,Health)*/
