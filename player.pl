@@ -82,13 +82,13 @@ choose_character :-
 addNewEquipment :-
     character(X),
     (X == swordman -> invent(swordman,[quant(wooden_sword,1),quant(wooden_armor,1),quant(health_potion,5),quant(A,B)]);
-    X == archer -> archer,[quant(wooden_bow,1),quant(wooden_armor,1),quant(health_potion,5),quant(A,B)]);
-    X == sorcerer -> sorcerer,[quant(magic_book,1),quant(wooden_armor,1),quant(health_potion,5), quant(A,B)])),
+    X == archer -> invent(archer,[quant(wooden_bow,1),quant(wooden_armor,1),quant(health_potion,5),quant(A,B)]);
+    X == sorcerer -> invent(sorcerer,[quant(magic_book,1),quant(wooden_armor,1),quant(health_potion,5), quant(A,B)])),
     C is A + B + 7, C =< 100.
 
 addInventory :-
     character(X),
     (X == swordman -> invent(swordman,[quant(wooden_sword,A),quant(wooden_armor,B),quant(health_potion,C)]);
-    X == archer -> archer,[quant(wooden_bow,A),quant(wooden_armor,B),quant(health_potion,C)]);
-    X == sorcerer -> sorcerer,[quant(magic_book,A),quant(wooden_armor,B),quant(health_potion,C)])),
+    X == archer -> invent(archer,[quant(wooden_bow,A),quant(wooden_armor,B),quant(health_potion,C)]);
+    X == sorcerer -> invent(sorcerer,[quant(magic_book,A),quant(wooden_armor,B),quant(health_potion,C)])),
     D is A + B + C, D =< 100.
