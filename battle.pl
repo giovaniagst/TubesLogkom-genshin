@@ -1,156 +1,175 @@
-enemyFound(EnemyName) :-
-	retract(amountofenemy(0)),
-	assert(amountofenemy(1)),
-	assert(enemy_status(Name,Health,Exp)). /*Gatau deh pokoknya kayak nyetel enemy yang ada*/
-	write('Fight like a knight, or run like a coward. Your choice.'),nl.
+:- dynamic(amountofenemy/1).
+:- dynamic(inbattle/3).
+:- dynamic(enemy_status/3).
+:- dynamic(player_status/3).
+:- dynamic(playerturn/1).
+:- dynamic(enemyfound/1).
+
+start:- /*Ini buat back-up sebelum nanti dihubungin sama file lain*/
+	asserta(player_status(id,3000,3000)),
+	enemyfound(someone).
+
+enemyfound(EnemyName):-
+	asserta(amountofenemy(1)),
+	asserta(enemy_status(EnemyName,4000,3000)),
+	write('Fight like a knight, or run like a coward. Your choice.'),nl,
 	write('Choose.'), nl,
 	write('- fight.'), nl,
 	write('- run.'), nl.
 
+run :-
+    random(0,1,X),
+    runluck(X).
+
+runluck(X):-
+    X = 1,
+    retract(amountofenemy(_)),
+    retract(enemy_status(_,_,_)),
+    write('You successfully run from the enemy.'),
+    asserta(amountofenemy(0)),!.
+
+runluck(X):-
+    X = 0,
+    write('Bad luck! You are not able to run~'),
+    fight.
+
 fight :-
-    retract(inbattle(_,_,_),
-    assert(inbattle(_,_,1),
-    assert(playerturn(1)). /*Dikasih kesempatan lebih duluan player*/
-    assert(enemyturn(0)).
-    /*Kalo misal belakangnya 1, artinya lagi dalam battle*/
+    asserta(inbattle(_,_,1)),
+    asserta(playerturn(1)),
 	write('List of things you are able to do:'),nl,
 	write('- attack.'),nl,
 	write('- special_attack.'),nl,
-	write('- use_potion.'),nl,
-	write('- display_enemy_status.'),nl,
-	write('- display_player_status.'),nl.
-
-display_enemy_status :-
-    /*Kita display kayak state enemy di sini*/
-    enemy_status(Name,Health,XP).
-    write(Name),nl,
-    write(Health),nl,
-    write(Exp),nl.
-
-/*Variabel, ngikutin enemy.pl ntar*/
-enemy_status(Name,Health,Exp).
-
-/*Variabel*/
-player_status(Name,Health,Exp).
-
-display_player_status :-
-    /*Bikin state player di sini*/
-    player_status(Name,Health,Exp),
-    write(Name),nl,
-    write(Health),nl,
-    write(Exp),nl.
-
-use_potion :-
-	check_amount_of_potion(X), /*Asumsi udah didefinisiin*/
-	X=0, /*Gaada potion*/
-	write('No potion to use.'),!.
-
-use_potion :-
-	check_amount_of_potion(X),
-	X/=0,
-	player_status(Name,Health,Exp),
-	Health==MaxHealth, /*Istilahnya udah ga bisa nambah lagi healthnya(?), ga penting sih*/
-	write('You're fully healthy~ what is potion for?').
-
-use_potion :-
-	check_amount_of_potion(X), /*Asumsi udah didefinisiin*/
-	X/=0,
-	player_status(Name,Health,Exp),
-	Health/=MaxHealth,
-	retract(player_status(Name,Health,Exp)),
-	potion(PotionName, AddHealth), /*Asumsinya semua potion di-state menambah health berapa*/
-	NewHealth is Health+AddHealth,
-	assert(player_status(Name,NewHealth,Exp)),
-	write('Yay, your health improved by', ).
-
-/*Hubungan potionnya ntar sama yang disimpen*/
+	write('- use_potion.'),nl.
 
 attack :-
-	inbattle(_,Player,0), /*Kalo misal ga lagi dalam pertarungan*/
+	inbattle(_,_,0), /*Kalo misal ga lagi dalam pertarungan*/
 	write('Command cannot be used because you are not in a battle.'),nl,!.
 	
 attack :-
-   inbattle(_,Player,1),
+   inbattle(_,_,1),
    playerturn(0),
    write('Not your turn yet!!'),!.
 
 attack :-
-    inbattle(_,Player,1),
+    inbattle(_,_,1),
     playerturn(1),
-    /*Berdasarkan inventory*/
     write('Damage!!!'),
     retract(enemy_status(Name,Health,Exp)),
-    NewHealth is Health-Damage,
-    NewExp is Exp-Damage, /*Masih ngasal banget yang pengurangannya*/
-    assert(enemy_status(Name,NewHealth,NewExp)),
-    check_current_state. /*Kalo misal belum kalah belum menang, yaudah lanjut terus*/
-    /*Kayak milih turnnya terus*/
+    random(1300,1500,Dmg),
+    NewHealth is Health-Dmg,
+    NewExp is Exp-Dmg,
+    asserta(enemy_status(Name,NewHealth,NewExp)),
+    check_enemydead.
 
-useInventory :-
-	check_amount_of_inventory(X),
-	X==0, /*Gaada inventory*/
-	write('No inventory to use.'),!.
-	
-useInventory :-
-	check_amount_of_inventory(X),
-	X/=0,
-	chooseInventory.
+enemyattack :-
+    retract(player_status(Name,Health,Exp)),
+    random(1300,1500,Dmg),
+    NewHealth is Health-Dmg,
+    NewExp is Exp-Dmg,
+    asserta(player_status(Name,NewHealth,NewExp)),
+    check_enemydead.
 
-chooseInventory :-
-	/*Gatau belum ngerti cara milih barang di inventory*/
-	
+check_enemydead :-
+	enemy_status(_,Health,_),
+	Health =< 0,
+	write('The enemy has fallen.'),!.
+
+check_enemydead :-
+	enemy_status(_,Health,_),
+	Health > 0,
+	check_playerdead.
+
+check_playerdead :-
+	player_status(_,Health,_),
+	Health =< 0,
+	write('YOU DIED.'),!.
+
+check_playerdead :-
+	player_status(_,Health,_),
+	Health > 0,
+	whichTurn.
+
 whichTurn :- /*Bisa aja yang enemy yang mau attack*/
-	randInterval(0,13,X),
-	X=13, retract(enemyturn(_)), assert(enemyturn(1)), !.
-	X/=13, retract(playerturn(_)), assert(playerturn(1)). 
-	
-special_attack:
-    /*Sama kayak attack, tapi damagenya lebih gede*/
+	random(0,3,X),
+        decide(X).
 
-win:-
-    checkwin,
-    retract(inbattle(_,Player,1),
-    write('YOU WON!'),nl,
-    assert(inbattle(_,Player,0). /*Dibikin jadi 0 artinya dia keluar dari battle*/
-    /*write....*/
+decide(X) :-
+	X=3,
+	retract(playerturn(_)),
+	asserta(playerturn(0)),
+	write('Its your enemys turn!'),
+	enemyattack.
 
-lose :-
-    checklose(IDName).
-    write('YOU LOSEEEEEEE!'),nl.
-    /*write...*/
+decide(X) :-
+	X \= 3, 
+	retract(playerturn(_)), 
+	asserta(playerturn(1)),
+	write('Your turn!'),
+	fight.
 
-check_current_state :-
-/*Gatau deh dipake ngga*/
 
-checklose:-
-    player_status(IDName,0,_).
+/* ##################################### */
 
-checkwin :-
-    enemy_status(BossEnemy,0,_).
+/* ATAS MASIH BUG */
 
-enemy_attack:- /*Sama, tapi pas turn enemy*/
+/* INI BAWAH BELUMMMMM */
 
-enemy_specialattack:- /*Sama, tapi pas turn enemy*/
+/* SPECIAL ATTACK JUGA BELUM */
 
-run :-
-    randInterval(0,1,X),
-    X = 1, runsuccess,!.
-    X = 0, runfail,!.
+/* DAMAGE BERDASARKAN INVENTORY BUKAN RANDOM */
 
-runfail:-
-    write('Bad luck! You are not able to run~'),
-    fight.
+/* Perlevelan gimana ya */
 
-runsuccess:-
-    retract(amountofenemy(_)),
-    write('You successfully run from the enemy.'),
-    assert(amountofenemy(0)).
+/* Kayaknya ntar bakal pake halt di akhir */
 
-/*Inget selalu dicek lagi inBattle apa ngga*/
-/*Cek diri sendiri, enemy, boss enemy, kalo udah selesai ya menang*/
-/*Ada bagian turn musuh*/
-/*Ngecek enemy dead*/
-/*Damagenya berdasarkan inventory*/
-/*Perlevelan gimana ya*/
-/*Kayaknya ntar bakal pake halt di akhir*/
-/*Mau cari tau arti reset apaan*/
+/* Mau cari tau arti reset apaan */
+
+% use_potion :-
+%	check_amount_of_potion(X), /*Asumsi udah didefinisiin*/
+%	X=0, /*Gaada potion*/
+%	write('No potion to use.'),!.
+
+% use_potion :-
+%	check_amount_of_potion(X),
+%	X/=0,
+%	player_status(Name,Health,Exp),
+%	Health==MaxHealth, /*Istilahnya udah ga bisa nambah lagi healthnya(?), ga penting sih*/
+%	write('You're fully healthy~ what is potion for?').
+
+% use_potion :-
+%	check_amount_of_potion(X), /*Asumsi udah didefinisiin*/
+%	X/=0,
+%	player_status(Name,Health,Exp),
+%	Health/=MaxHealth,
+%	retract(player_status(Name,Health,Exp)),
+%	potion(PotionName, AddHealth), /*Asumsinya semua potion di-state menambah health berapa*/
+%	NewHealth is Health+AddHealth,
+%	assert(player_status(Name,NewHealth,Exp)),
+%	write('Yay, your health improved by', ).
+%
+% /*Hubungan potionnya ntar sama yang disimpen*/
+
+% useInventory :-
+%	check_amount_of_inventory(X),
+%	X==0, /*Gaada inventory*/
+%	write('No inventory to use.'),!.
+%	
+% useInventory :-
+%	check_amount_of_inventory(X),
+%	X/=0,
+%	chooseInventory.
+%
+% chooseInventory :-
+%	/*Gatau belum ngerti cara milih barang di inventory*/
+%
+% win:-
+%    checkwin,
+%    retract(inbattle(_,Player,1),
+%    write('YOU WON!'),nl,
+%    assert(inbattle(_,Player,0). /*Dibikin jadi 0 artinya dia keluar dari battle*/
+%    /*write....*/
+%
+% lose :-
+%    checklose(IDName).
+%    write('YOU LOSEEEEEEE!'),nl.
+%    /*write...*/
