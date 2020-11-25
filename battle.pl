@@ -11,10 +11,10 @@ start:- /*Ini buat back-up sebelum nanti dihubungin sama file lain*/
 
 enemyfound(EnemyName):-
 	asserta(amountofenemy(1)),
-	asserta(enemy_status(EnemyName,4000,3000)),
+	asserta(enemy_status(EnemyName,5000,3000)),
 	write('Fight like a knight, or run like a coward. Your choice.'),nl,
 	write('Choose.'), nl,
-	write('- fight.'), nl,
+	write('- startfight.'), nl,
 	write('- run.'), nl.
 
 run :-
@@ -31,11 +31,19 @@ runluck(X):-
 runluck(X):-
     X = 0,
     write('Bad luck! You are not able to run~'),
-    fight.
+    fightstart.
 
-fight :-
+startfight :-
     asserta(inbattle(_,_,1)),
     asserta(playerturn(1)),
+	write('List of things you are able to do:'),nl,
+	write('- attack.'),nl,
+	write('- special_attack.'),nl,
+	write('- use_potion.'),nl.
+
+fight :-
+    inbattle(_,_,1),
+    playerturn(1),
 	write('List of things you are able to do:'),nl,
 	write('- attack.'),nl,
 	write('- special_attack.'),nl,
@@ -62,55 +70,57 @@ attack :-
     check_enemydead.
 
 enemyattack :-
+    inbattle(_,_,1),
+    playerturn(0),
     retract(player_status(Name,Health,Exp)),
     random(1300,1500,Dmg),
     NewHealth is Health-Dmg,
     NewExp is Exp-Dmg,
     asserta(player_status(Name,NewHealth,NewExp)),
+    write('You are damaged!'),nl,
     check_enemydead.
 
 check_enemydead :-
 	enemy_status(_,Health,_),
 	Health =< 0,
-	write('The enemy has fallen.'),!.
+	write('The enemy has fallen.'),nl,!.
 
 check_enemydead :-
 	enemy_status(_,Health,_),
 	Health > 0,
-	check_playerdead.
+	check_playerdead,!.
 
 check_playerdead :-
 	player_status(_,Health,_),
 	Health =< 0,
-	write('YOU DIED.'),!.
+	write('YOU DIED.'),nl,!.
 
 check_playerdead :-
 	player_status(_,Health,_),
 	Health > 0,
-	whichTurn.
+	whichTurn,!.
 
 whichTurn :- /*Bisa aja yang enemy yang mau attack*/
-	random(0,3,X),
+        write('Wait for your luck...'),nl,
+	random(0,2,X),
         decide(X).
 
 decide(X) :-
-	X=3,
+	X=0,
 	retract(playerturn(_)),
 	asserta(playerturn(0)),
-	write('Its your enemys turn!'),
+	write('Its your enemys turn!'),nl,
 	enemyattack.
 
 decide(X) :-
-	X \= 3, 
+	X\=0, 
 	retract(playerturn(_)), 
 	asserta(playerturn(1)),
-	write('Your turn!'),
+	write('Your turn!'),nl,
 	fight.
 
 
 /* ##################################### */
-
-/* ATAS MASIH BUG */
 
 /* INI BAWAH BELUMMMMM */
 
