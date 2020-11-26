@@ -7,6 +7,7 @@
 :- dynamic(exp/1).
 :- dynamic(gold/1).
 :- dynamic(player/2).
+:- dynamic(player_status/1).
 
 
 
@@ -54,12 +55,16 @@
     asserta(gold(archer,1000)),
     asserta(gold(sorcerer,1000)).*/
 
+character(swordman).
+character(archer).
+character(sorcerer).
+
 swordman :-
     asserta(level(1)),
     asserta(health(1000)),
     asserta(attack(100)),
     asserta(defense(90)),
-    asserta(exp(0)),
+    asserta(expo(0)),
     asserta(gold(1000)).
 
 archer :-
@@ -67,7 +72,7 @@ archer :-
     asserta(health(1000)),
     asserta(attack(110)),
     asserta(defense(85)),
-    asserta(exp(0)),
+    asserta(expo(0)),
     asserta(gold(1000)).
 
 sorcerer :-
@@ -75,7 +80,7 @@ sorcerer :-
     asserta(health(1000)),
     asserta(attack(105)),
     asserta(defense(80)),
-    asserta(exp(0)),
+    asserta(expo(0)),
     asserta(gold(1000)).
 
 /* rules untuk player */
@@ -85,36 +90,62 @@ choose_character :-
     write('2. Archer'), nl,
     write('3. Sorcerer'), nl,
     read(X), nl,
-    (X =:= 1 -> write('Welcome to the adventure, Swordman!'), nl, write('You got a Wooden Sword, Wooden Armor, and 5 Health Potion'), nl, write('Lets finish the job!'), nl, swordman;
-    X =:= 2 -> write('Welcome to the adventure, Archer!'), nl, write('You got a Wooden Bow, Wooden Armor, and 5 Health Potion'), nl, write('Lets finish the job!'), nl, archer;
-    X =:= 3 -> write('Welcome to the adventure, Sorcerer!'), nl, write('You got a Magic Book, Wooden Armor, and 5 Health Potion'), nl, write('Lets finish the job!'), nl, sorcerer).
+    (X =:= 1 -> write('Welcome to the adventure, Swordman!'), nl, write('You got a Wooden Sword, Wooden Armor, and 5 Health Potion'), nl, write('Lets finish the job!'), nl, character(swordman), swordman;
+    X =:= 2 -> write('Welcome to the adventure, Archer!'), nl, write('You got a Wooden Bow, Wooden Armor, and 5 Health Potion'), nl, write('Lets finish the job!'), nl, character(archer), archer;
+    X =:= 3 -> write('Welcome to the adventure, Sorcerer!'), nl, write('You got a Magic Book, Wooden Armor, and 5 Health Potion'), nl, write('Lets finish the job!'), nl, character(sorcerer), sorcerer).
 
 player_place :-
     asserta(player(1,1)).
 
-/*player_status :-
-    write ('Your current status :'), nl,
-    (swordman ->
+player_status(X) :-
+    write('Your current status :'), nl,
+    write(''), nl,
+    character(X),
+    (X == swordman ->
         write('Job : Swordman'), nl,
-        write('Level : ', level(Level)), nl,
-        write('Health : ', health(Health),'/1000'), nl,
-        write('Attack : ', attack(Attack)), nl,
-        write('Defense : ', defense(Defense)), nl,
-        write('Exp : ', exp(Exp), '/300'), nl,
-        write('Gold : ', gold(Gold));
-    archer ->
-        write('Job : Swordman'), nl,
-        write('Level : ', level(Level)), nl,
-        write('Health : ', health(Health),'/1000'), nl,
-        write('Attack : ', attack(Attack)), nl,
-        write('Defense : ', defense(Defense)), nl,
-        write('Exp : ', exp(Exp), '/300'), nl,
-        write('Gold : ', gold(Gold));
-    sorcerer ->
-        write('Job : Swordman'), nl,
-        write('Level : ', level(Level)), nl,
-        write('Health : ', health(Health),'/1000'), nl,
-        write('Attack : ', attack(Attack)), nl,
-        write('Defense : ', defense(Defense)), nl,
-        write('Exp : ', exp(Exp), '/300'), nl,
-        write('Gold : ', gold(Gold))).*/
+        write('Level : '),
+        forall(level(Level),write(Level)), nl,
+        write('Health : '), 
+        forall(health(Health),write(Health)),
+        write('/1000'), nl,
+        write('Attack : '), 
+        forall(attack(Attack),write(Attack)), nl,
+        write('Defense : '), 
+        forall(defense(Defense),write(Defense)), nl,
+        write('EXP : '), 
+        forall(expo(Exp),write(Exp)),
+        write('/300'), nl,
+        write('Gold : '), 
+        forall(gold(Gold),write(Gold));
+    X == archer ->
+        write('Job : Archer'), nl,
+        write('Level : '),
+        forall(level(Level),write(Level)), nl,
+        write('Health : '), 
+        forall(health(Health),write(Health)),
+        write('/1000'), nl,
+        write('Attack : '), 
+        forall(attack(Attack),write(Attack)), nl,
+        write('Defense : '), 
+        forall(defense(Defense),write(Defense)), nl,
+        write('EXP : '), 
+        forall(expo(Exp),write(Exp)),
+        write('/300'), nl,
+        write('Gold : '), 
+        forall(gold(Gold),write(Gold));
+    X == sorcerer ->
+        write('Job : Sorcerer'), nl,
+        write('Level : '),
+        forall(level(Level),write(Level)), nl,
+        write('Health : '), 
+        forall(health(Health),write(Health)),
+        write('/1000'), nl,
+        write('Attack : '), 
+        forall(attack(Attack),write(Attack)), nl,
+        write('Defense : '), 
+        forall(defense(Defense),write(Defense)), nl,
+        write('EXP : '), 
+        forall(expo(Exp),write(Exp)),
+        write('/300'), nl,
+        write('Gold : '), 
+        forall(gold(Gold),write(Gold))).
