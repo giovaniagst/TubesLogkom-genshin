@@ -60,28 +60,34 @@ addToInventory(Nama) :-
 
 /* menghapus item dari inventory */
 delFromInventory(Nama) :-
-    retract(haveA(Nama,Jumlah)),
+    retract(haveA(Nama,Jumlah,_)),
     Jumlah1 is Jumlah - 1,
-    asserta(haveA(Nama,Jumlah1)),
+    asserta(haveA(Nama,Jumlah1,_)),
     retract(total(Total)),
     Total1 is Total + 1,
     asserta(total(Total1)).
 
 delFromInventory(Nama) :-
-    retract(haveH(Nama,Jumlah)),
+    retract(haveH(Nama,Jumlah,_)),
     Jumlah1 is Jumlah - 1,
-    asserta(haveH(Nama,Jumlah1)),
+    asserta(haveH(Nama,Jumlah1,_)),
     retract(total(Total)),
     Total1 is Total + 1,
     asserta(total(Total1)).
 
 delFromInventory(Nama) :-
-    retract(haveE(Nama,Jumlah)),
+    retract(haveE(Nama,Jumlah,_)),
     Jumlah1 is Jumlah - 1,
-    asserta(haveE(Nama,Jumlah1)),
+    asserta(haveE(Nama,Jumlah1,_)),
     retract(total(Total)),
-    Total1 is Total + 1,
+    Total1 is Total - 1,
     asserta(total(Total1)).
+
+/* menampilkan inventory */
+show_inventory :-
+    inventory_swordman,
+    write('This is your inventory :'), nl,
+    forall(haveE(Equipment,_,_),(write(Equipment),nl)).
 
 
 
