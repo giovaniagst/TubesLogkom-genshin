@@ -105,137 +105,86 @@ map:-
 
 % move
 w :-
-	\+selected,
-	write('Choose your job first before starting your adventure!'),!.
-w :-
-	battle(_),
+	inbattle(_,_,1),
 	write('Finish your battle first!!'),!.
 w :-
-	selected,
-	pilih(1),
-	write('You found an enemy!!!'),nl.
-
-w :-
-	\+playing(_),
-	write('this command can only be used after the game starts.'), nl,
-	write('use "start." to start the Tokemon Game!'), nl, !.
-w :-
-	selected,
 	player(_,Y),
 	Y =:= 1,
 	write('Oops! You just collided with a barrier! Try moving another direction.'),nl,!.
 w :-
-	selected,
 	player(X,Y),
 	pagar(X,P),
 	Q is P+1,
 	Y =:= Q,
 	write('Oops! You just collided with a barrier! Try moving another direction.'),nl,!.
 w :- 
-	selected,
 	retract(player(X,Y)),
 	Y > 1,
 	NewY is Y - 1,
 	write('You move north'), nl,
 	asserta(player(X, NewY)), appear,
 	!.
-a :-
-	\+selected,
-	write('Choose your job first before starting your adventure!'),!.
 
 a :-
-	selected,
-	pilih(1),
-	write('You found an enemy!!!'),nl.
-a :-
-	battle(_),
+	inbattle(_,_,1),
 	write('Finish your battle first!!'),!.
 a :-
 	\+playing(_),
 	write('this command can only be used after the game starts.'), nl,
 	write('use "start." to start the Tokemon Game!'), nl, !.
 a :-
-	selected,
 	player(X,_),
 	X =:= 1,
 	write('Oops! You just collided with a barrier! Try moving another direction.'),nl,!.
 a :-
-	selected,
 	player(X,Y),
 	pagar(P,Y),
 	Q is P+1,
 	X =:= Q,
 	write('Oops! You just collided with a barrier! Try moving another direction.'),nl,!.
 a :- 
-	selected,
 	retract(player(X,Y)),
 	NewX is X - 1,
 	write('You move west'), nl,
 	asserta(player(NewX, Y)), appear, 
 	!.
+
 s :-
-	\+selected,
-	write('Choose your job first before starting your adventure!'),!.
-s :-
-	battle(_),
+	inbattle(_,_,1),
 	write('Finish your battle first!!'),!.
 s :-
-	selected,
-	pilih(1),
-	write('You found an enemy!!!'),nl.
-s :-
-	\+playing(_),
-	write('this command can only be used after the game starts.'), nl,
-	write('use "start." to start the Tokemon Game!'), nl, !.
-s :-
-	selected,
 	player(_,Y),
 	tinggipeta(P),
 	Y =:= P,
 	write('Oops! You just collided with a barrier! Try moving another direction.'),nl,!.
 s :-
-	selected,
 	player(X,Y),
 	pagar(X,P),
 	Q is P-1,
 	Y =:= Q,
 	write('Oops! You just collided with a barrier! Try moving another direction.'),nl,!.
 s :- 
-	selected,
 	retract(player(X,Y)),
 	NewY is Y + 1,
 	write('You move South!'), nl,
 	asserta(player(X, NewY)),  appear, 
 	!.
+
 d :-
-	\+selected,
-	write('Choose your job first before starting your adventure!'),!.
-d :-
-	battle(_),
+	inbattle(_,_,1),
 	write('Finish your battle first!!'),!.
 d :-
-	selected,
-	pilih(1),
-	write('You found an enemy!!!'),nl.
-d :-
-	\+playing(_),
-	write('this command can only be used after the game starts.'), nl,
-	write('use "start." to start the Tokemon Game!'), nl, !.
-d :-
-	selected,
 	player(X,_),
 	lebarpeta(Q),
 	X =:= Q,
 	write('Oops! You just collided with a barrier! Try moving another direction.'),nl,!.
 d :-
-	selected,
 	player(X,Y),
 	pagar(P,Y),
 	Q is P-1,
 	X =:= Q,
 	write('Oops! You just collided with a barrier! Try moving another direction.'),nl,!.
 d :- 
-	selected,
 	retract(player(X,Y)),
 	NewX is X + 1,
 	write('You moved east!'), nl,
@@ -244,7 +193,10 @@ d :-
 
 appear :-
 	random(1,7,Appear),
-	(Appear =:= 5 -> decide; nothing).
+	(Appear =:= 5 -> 
+		write('You found an enemy!!!'),
+		startbattle; 
+		nothing).
 
 nothing :-
 	player(X,Y),
@@ -255,6 +207,11 @@ nothing :-
 	player(X,Y),
 	quest(X,Y),
 	write('You are on the Quest Office'), nl,nl,!.
+	
+nothing :-
+	player(X,Y),
+	dungeon(X,Y),
+	write('You are on the Dungeon Boss'), nl,nl,!.
 
 nothing :-
 	write('There is nothing in here'), nl,nl.
