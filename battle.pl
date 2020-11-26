@@ -9,8 +9,8 @@
 
 startbattle :-
 	write('Choose start(X), with X being swordman/archer/sorcherer.'),nl. /*Belum dihubungin sama yang lain*/
-    
-start(X):- /*Ini buat back-up sebelum nanti dihubungin sama file lain*/
+  
+start(X):-
 	X=swordman,
 	inventory_swordman,
 	swordman,
@@ -48,7 +48,6 @@ start(X):-
 	enemyfound.
 
 enemyfound:-
-	asserta(amountofenemy(1)),
 	write('Fight like a knight, or run like a coward. Your choice.'),nl,
 	write('Choose.'), nl,
 	write('- startfight.'), nl,
@@ -71,8 +70,8 @@ runluck(X):-
     startfight.
 
 use_potion:-
-	retract(player_status(Hea,Att,Def)),
 	haveH(health_potion,_,AddHea),
+	retract(player_status(Hea,Att,Def)),
 	delFromInventory(health_potion),
 	NewHea is (Hea+AddHea),
 	asserta(player_status(NewHea,Att,Def)),
@@ -86,7 +85,7 @@ startfight :-
 	write('List of things you are able to do:'),nl,
 	write('- attack.'),nl,
 	write('- special_attack.'),nl,
-	write('- use_potion.'),nl.
+	write('- use_potion(health_potion).'),nl.
 
 fight :-
     inbattle(_,_,1),
@@ -94,7 +93,7 @@ fight :-
 	write('List of things you are able to do:'),nl,
 	write('- attack.'),nl,
 	write('- special_attack.'),nl,
-	write('- use_potion.'),nl.
+	write('- use_potion(health_potion).'),nl.
 
 attack :-
 	inbattle(_,_,0), /*Kalo misal ga lagi dalam pertarungan*/
@@ -103,15 +102,53 @@ attack :-
 attack :-
     inbattle(_,_,1),
     playerturn(1),
-    showinventory.
-    
+    write('> justattack. --- to proceed without equipments,'),nl,
+    write('> showinventory. --- if you want to use some to add your attack.'),nl.
+
+justattack :-
+    retract(enemy(Name,_,Hea,_,Def)),
+    random(30,50,Dmg),
+    write(Dmg),
+    write(' damage hits '),
+    write(Name),nl,  
+    random(0,30,Y),
+    write('Nevertheless, '),
+    write(Name),nl,
+    write(' used his '),
+    write(Y),
+    write(' defense'),nl,
+    NewHea is (Hea-Dmg+0.5*Y),
+    NewDef is (Def-Y),
+    asserta(enemy(Name,_,NewHea,_,NewDef)),
+    retract(player_status(Hea,A,_)),
+    NewA is (A-Dmg),
+    asserta(player_status(Hea,NewA,_)),
+    check_enemydead,
+    whichTurn,!.
+
 use(W) :-
-    haveE(W,_,Damage),
-    write('Damage!!!'),nl,
-    retract(enemy(_,_,Hea,_,_)),
-    NewHea is (Hea-Damage),
-    asserta(enemy(_,_,NewHea,_,_)),
-    check_enemydead.
+    retract(enemy(Name,_,Hea,_,Def)),
+    random(30,50,Dmg1),
+    write(Dmg1),
+    haveE(W,_,Dmg),
+    write(Dmg),
+    write(Dmg1+Dmg),
+    write(' damage hits '),
+    write(Name),nl,  
+    random(0,30,Y),
+    write('Nevertheless, '),
+    write(Name),nl,
+    write(' used his '),
+    write(Y),
+    write(' defense'),nl,
+    NewHea is (Hea-Dmg1-Dmg+0.5*Y),
+    NewDef is (Def-Y),
+    asserta(enemy(Name,_,NewHea,_,NewDef)),
+    retract(player_status(Hea,A,_)),
+    NewA is (A-Dmg1),
+    asserta(player_status(Hea,NewA,_)),
+    check_enemydead,
+    whichTurn,!.
 
 showinventory:-
 	forall(haveE(Weapon,_,_),(write(Weapon),nl)),
@@ -125,12 +162,22 @@ special_attack :-
 
 specialattack_able(X):-
     X=0,    
-    write('Damage!!!'),nl,
-    retract(enemy(_,_,Hea,_,_)),
-    random(1700,2000,Dmg),
-    NewHea is (Hea-Dmg),
-    asserta(enemy(_,_,NewHea,_,_)),
-    check_enemydead.
+    retract(enemy(Name,_,Hea,_,Def)),
+    random(100,200,Dmg),
+    write(Dmg),
+    write(' damage hits '),
+    write(Name),nl,  
+    random(0,30,Y),
+    write('Nevertheless, '),
+    write(Name),nl,
+    write(' used his '),
+    write(Y),
+    write(' defense'),nl,
+    NewHea is (Hea-Dmg+0.5*Y),
+    NewDef is (Def-Y),
+    asserta(enemy(Name,_,NewHea,_,NewDef)),
+    check_enemydead,
+    whichTurn,!.
 
 specialattack_able(X):-
     X\=0,
@@ -142,18 +189,25 @@ enemyattack :-
     inbattle(_,_,1),
     playerturn(0),
     retract(player_status(Hea,Att,Def)),
-    random(1300,1500,Dmg),
-    NewHea is (Hea-Dmg),
-    asserta(player_status(NewHea,Att,Def)),
-    write('You are damaged!'),nl,
-    check_enemydead.
+    random(100,150,Dmg),
+    write(Dmg),
+    write(' damage hits you'),nl,
+    random(0,30,Y),
+    write('Nevertheless, you used your '),
+    write(Y),
+    write(' defense'),nl,
+    NewHea is (Hea-Dmg+0.5*Y),
+    NewDef is (Def-Y),
+    asserta(player_status(NewHea,Att,NewDef)),
+    check_enemydead,
+    whichTurn,!.
 
 check_enemydead :-
 	enemy(_,_,Hea,_,_),
 	Hea =< 0,
 	retract(inbattle(_,_,_)),
 	asserta(inbattle(_,_,0)),
-	write('The enemy has fallen.'),nl,!.
+	write('The enemy has fallen.').
 
 check_enemydead :-
 	enemy(_,_,Hea,_,_),
@@ -165,25 +219,27 @@ check_playerdead :-
 	Hea =< 0,
 	retract(inbattle(_,_,_)),
 	asserta(inbattle(_,_,0)),
-	write('YOU DIED.'),nl,!.
+	write('YOU DIED.').
 
 check_playerdead :-
     player_status(Hea,_,_),
-	Hea > 0,
-	whichTurn,!.
+    Hea > 0.
 
 whichTurn :-
+	inbattle(_,_,1),
+	playerturn(0),
+	retract(playerturn(0)), 
+	asserta(playerturn(1)),
+	write('Your turn!'),nl,
+	fight,!.
+
+whichTurn :-
+	inbattle(_,_,1),
 	playerturn(1),
-	retract(playerturn(1)),
+	retract(playerturn(_)),
 	asserta(playerturn(0)),
 	write('Its your enemys turn!'),nl,
 	enemyattack.
 
 whichTurn :-
-	playerturn(0),
-	retract(playerturn(0)), 
-	asserta(playerturn(1)),
-	write('Your turn!'),nl,
-	fight.
-
-    /*Random buat defense-nya*/
+	inbattle(_,_,0).
