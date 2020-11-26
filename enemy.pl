@@ -12,9 +12,9 @@
 /** ENEMY FACT : enemy(nama,level,health,attack,defense) **/
 :- dynamic(enemy/5).
 
-enemy(slime,3,90,90,90).
-enemy(goblin,1,90,70,70).
-enemy(wolf,2,90,80,80).
+enemy(slime,3,1800,180,90).
+enemy(goblin,1,1200,100,70).
+enemy(wolf,2,1500,130,80).
 
 /** RANDOMIZE ENEMY (based on enemy's level) **/ % sementara berdasarkan level
 random_enemy:-
