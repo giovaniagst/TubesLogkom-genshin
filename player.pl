@@ -1,4 +1,5 @@
 /* Untuk player.pl */
+
 :- dynamic(character/1).
 :- dynamic(level/2).
 :- dynamic(health/2).
@@ -6,8 +7,8 @@
 :- dynamic(defense/2).
 :- dynamic(exp/2).
 :- dynamic(gold/2).
-:- dynamic(invent/2).
-:- dynamic(quant/2).
+:- dynamic(playing/0).
+
 
 :- discontiguous(a_character/0).
 :- discontiguous(a_level/0).
@@ -16,7 +17,7 @@
 :- discontiguous(a_defense/0).
 :- discontiguous(a_exp/0).
 :- discontiguous(a_gold/0).
-:- discontiguous(a_inventory/0).
+
 
 /* fakta untuk player */
 
@@ -62,12 +63,6 @@ a_gold :-
     asserta(gold(archer,1000)),
     asserta(gold(sorcerer,1000)).
 
-/* inventory awal */
-a_inventory :-
-    asserta(invent(swordman,[quant(wooden_sword,1),quant(wooden_armor,1),quant(health_potion,5)])).
-    asserta(invent(archer,[quant(wooden_bow,1),quant(wooden_armor,1),quant(health_potion,5)])).
-    asserta(invent(sorcerer,[quant(magic_book,1),quant(wooden_armor,1),quant(health_potion,5)])).
-
 /* rules untuk player */
 choose_character :-
     write('Welcome to GENSHIN ADVENTURE. Choose your character'), nl,
@@ -75,20 +70,6 @@ choose_character :-
     write('2. Archer'), nl,
     write('3. Sorcerer'), nl,
     read(X), nl,
-    (X =:= 1 -> write('Welcome to the adventure, Swordman!'), nl, write('You got a Wooden Sword, Wooden Armor, and 5 Health Potion'), nl, write("Let's finish the job!"), nl, character(swordman);
-    X =:= 2 -> write('Welcome to the adventure, Archer!'), nl, write('You got a Wooden Bow, Wooden Armor, and 5 Health Potion'), nl, write("Let's finish the job!"), nl, character(archer);
-    X =:= 3 -> write('Welcome to the adventure, Sorcerer!'), nl, write('You got a Magic Book, Wooden Armor, and 5 Health Potion'), nl, write("Let's finish the job!"), nl, character(sorcerer)).
-
-addNewEquipment :-
-    character(X),
-    (X == swordman -> invent(swordman,[quant(wooden_sword,1),quant(wooden_armor,1),quant(health_potion,5),quant(A,B)]);
-    X == archer -> invent(archer,[quant(wooden_bow,1),quant(wooden_armor,1),quant(health_potion,5),quant(A,B)]);
-    X == sorcerer -> invent(sorcerer,[quant(magic_book,1),quant(wooden_armor,1),quant(health_potion,5), quant(A,B)])),
-    C is A + B + 7, C =< 100.
-
-addInventory :-
-    character(X),
-    (X == swordman -> invent(swordman,[quant(wooden_sword,A),quant(wooden_armor,B),quant(health_potion,C)]);
-    X == archer -> invent(archer,[quant(wooden_bow,A),quant(wooden_armor,B),quant(health_potion,C)]);
-    X == sorcerer -> invent(sorcerer,[quant(magic_book,A),quant(wooden_armor,B),quant(health_potion,C)])),
-    D is A + B + C, D =< 100.
+    (X =:= 1 -> write('Welcome to the adventure, Swordman!'), nl, write('You got a Wooden Sword, Wooden Armor, and 5 Health Potion'), nl, write('Lets finish the job!'), nl, character(swordman);
+    X =:= 2 -> write('Welcome to the adventure, Archer!'), nl, write('You got a Wooden Bow, Wooden Armor, and 5 Health Potion'), nl, write('Lets finish the job!'), nl, character(archer);
+    X =:= 3 -> write('Welcome to the adventure, Sorcerer!'), nl, write('You got a Magic Book, Wooden Armor, and 5 Health Potion'), nl, write('Lets finish the job!'), nl, character(sorcerer)).
