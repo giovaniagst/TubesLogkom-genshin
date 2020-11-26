@@ -4,6 +4,8 @@
 :- include('inventory.pl').
 :- include('map.pl').
 
+
+
 start :-
     playing(_),!.
 
@@ -29,7 +31,7 @@ start:-
 
 start:-
     choose_character,
-    mulai.
+    mulai, player_place.
 
 quit :-
     halt, !.
@@ -48,23 +50,26 @@ help :-
     write('% 9. help   : menampilkan bantuan                                              %'), nl,
     write('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'), nl.
 
-
-
 inventory :-
+    show_inventory.
+/*status :-
+    player_status.*/
+
+/*inventory :-
     write('This is your inventory'), nl,
     character(Job),
-    (Job == 'swordman' ->
+    (Job == swordman ->
         inventory_sowrdman,
         have(Nama,Jumlah),
         (Jumlah =\= 0 ->
             write(Jumlah), write(Nama), nl);
-    Job == 'archer' ->
+    Job == archer ->
         inventory_archer,
         have(Nama,Jumlah),
         (Jumlah =\= 0 ->
             write(Jumlah), write(Nama), nl);
-    Job == 'sorcerer' ->
+    Job == sorcerer ->
         inventory_sorcerer,
         have(Nama,Jumlah),
         (Jumlah =\= 0 ->
-            write(Jumlah), write(Nama), nl)).
+            write(Jumlah), write(Nama), nl)).*/
