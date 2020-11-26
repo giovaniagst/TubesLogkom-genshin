@@ -1,12 +1,17 @@
 /* File main.pl */
 
 :- include('player.pl').
+:- include('inventory.pl').
+:- include('map.pl').
 
-mulai:-
+start :-
+    playing(_),!.
+
+start:-
    /* nanti ada tulisan genshin */
     write(''), nl,
     write(''), nl,
-    write("Let's play the game"), nl,
+    write('Lets play the game'), nl,
     write(''), nl,
     write(''), nl,
     write('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'), nl,
@@ -23,7 +28,8 @@ mulai:-
     write('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'), nl.
 
 start:-
-    choose_character.
+    choose_character,
+    mulai.
 
 quit :-
     halt, !.
@@ -42,22 +48,23 @@ help :-
     write('% 9. help   : menampilkan bantuan                                              %'), nl,
     write('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'), nl.
 
-map :-
-    write("You also got a map! Let's see…"), nl,
-    write('#################'), nl,
-    write('#P--------#-----#'), nl,
-    write('#---------#--Q--#'), nl,
-    write('#---------#-----#'), nl,
-    write('#---------##----#'), nl,
-    write('#---------------#'), nl,
-    write('#---------##----#'), nl,
-    write('#---------#-----#'), nl,
-    write('#---------#--S--#'), nl,
-    write('#---------#-----#'), nl,
-    write('#---------#######'), nl,
-    write('#---------#-----#'), nl,
-    write('#---------#--D--#'), nl,
-    write('#---------#-----#'), nl,
-    write('#---------##----#'), nl,
-    write('#---------------#'), nl,
-    write('#################'), nl.
+
+
+inventory :-
+    write('This is your inventory'), nl,
+    character(Job),
+    (Job == 'swordman' ->
+        inventory_sowrdman,
+        have(Nama,Jumlah),
+        (Jumlah =\= 0 ->
+            write(Jumlah), write(Nama), nl);
+    Job == 'archer' ->
+        inventory_archer,
+        have(Nama,Jumlah),
+        (Jumlah =\= 0 ->
+            write(Jumlah), write(Nama), nl);
+    Job == 'sorcerer' ->
+        inventory_sorcerer,
+        have(Nama,Jumlah),
+        (Jumlah =\= 0 ->
+            write(Jumlah), write(Nama), nl)).
