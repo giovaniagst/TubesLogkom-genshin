@@ -1,24 +1,22 @@
-/* :- include('battle.pl'). */
+:- include('battle.pl').
 
-:- dynamic(lebar/1).
-:- dynamic(tinggi/1).
-:- dynamic(pagar/2).
 :- dynamic(playing/1).
-:- dynamic(quest/2).
+:- dynamic(lebarpeta/1).
+:- dynamic(tinggipeta/1).
 :- dynamic(store/2).
+:- dynamic(pagar/2).
+:- dynamic(quest/2).
 :- dynamic(enemy/2).
+:- dynamic(dungeon/2).
 
-
-lebar(15).
-tinggi(15).
+lebarpeta(15).
+tinggipeta(15).
 
 mulai :-
-	
-	asserta(store(13,9)),
-	asserta(dungeon(13,13)),
+	asserta(store(13,8)),
+	asserta(dungeon(13,12)),
 	asserta(quest(13,2)),
-	asserta(player(1,1)),
-	/* space buat forall blabla krn masih gapaham */
+	/* asserta(player(2,2)), */
 	asserta(pagar(10,1)),
 	asserta(pagar(10,2)),
 	asserta(pagar(10,3)),
@@ -41,75 +39,54 @@ mulai :-
 	asserta(pagar(10,14)),
 	asserta(pagar(11,14)),
 	!.
-	
-/* untuk print map */
-pagaratas(_,Y) :-
+
+borderatas(_,Y) :-
 	Y =:= 0,!.
-	
-pagarbawah(_,Y) :-
-	tinggi(T),
-	Y =:= T+1, !.
-	
-pagarkiri(X,_) :-
+
+borderbawah(_,Y) :-
+	tinggipeta(T),
+	Ymax is T+1,
+	Y =:= Ymax,!.
+
+borderkiri(X,_) :-
 	X =:= 0,!.
-	
-pagarkanan(X,_) :-
-	lebar(L),
-	X =:= L+1, !.
-	
-printmap(X,Y) :-
-	pagaratas(X,Y),
-	!,
-	write('#').
-printmap(X,Y) :-
-	pagarkiri(X,Y),
-	!,
-	write('#').
-printmap(X,Y) :-
-	pagarkanan(X,Y),
-	!,
-	write('#').
-printmap(X,Y) :-
-	pagarbawah(X,Y),
-	!,
-	write('#').	
-printmap(X,Y) :-
-	player(X,Y),
-	!,
-	write('P').
-printmap(X,Y) :-
-	store(X,Y),
-	!,
-	write('S').
-printmap(X,Y) :-
-	dungeon(X,Y),
-	!,
-	write('D').
-printmap(X,Y) :-
-	quest(X,Y),
-	!,
-	write('Q').
-printmap(X,Y) :-
-	pagar(X,Y),
-	!,
-	write('#').
-printmap(_,_) :-
-	write('#').
-	
-/* penggunaan command "map." */
-map :-
-	\+playing(_),
-	write('You need to type "start." first before using map.'),
-	nl,
-	!.
-map :-
-	tinggi(T),
-	lebar(L),
+
+borderkanan(X,_) :-
+	lebarpeta(L),
+	Xmax is L+1,
+	X =:= Xmax,!.
+
+printpeta(X,Y) :-
+	borderatas(X,Y), !, write('#').
+printpeta(X,Y) :-
+	borderbawah(X,Y), !, write('#').
+printpeta(X,Y) :-
+	borderkiri(X,Y), !, write('#').
+printpeta(X,Y) :-
+	borderkanan(X,Y), !, write('#').
+printpeta(X,Y) :-
+	player(X,Y), !, write('P').
+printpeta(X,Y) :-
+	store(X,Y), !, write('S').
+printpeta(X,Y) :-
+	quest(X,Y), !, write('Q').
+printpeta(X,Y) :-
+	dungeon(X,Y), !, write('D').
+printpeta(X,Y) :-
+	pagar(X,Y), !, write('#').
+printpeta(_,_) :-
+	write('-').
+
+map:-
+	tinggipeta(T),
+	lebarpeta(L),
 	X is 0,
+	Xmax is L+1,
 	Y is 0,
-	forall(between(Y, L+1, J), (
-		forall(between(X, T+1, I), (
-			printmap(I,J)
+	Ymax is T+1,
+	forall(between(Y, Ymax, J), (
+		forall(between(X, Xmax, I), (
+			printpeta(I,J)
 		)),
 		nl
 	)),
@@ -125,238 +102,159 @@ map :-
 	nl,
 	!.
 
-/* jika player sampai ke suatu titik */
-arrive :-
-	player(X,Y),
-	quest(X,Y),
-	write('Arrived at the Quest Office!'),
-	nl,
-	write('You can take quests here to get additional bonus for killing enemies!'),
-	nl,
-	!.
 
-arrive :-
-	player(X,Y),
-	store(X,Y),
-	write('Arrived at the Store!'),
-	nl,
-	write('You can buy equipments using golds!'),
-	nl,
-	!.
-
-arrive :-
-	player(X,Y),
-	dungeon(X,Y),
-	write('Arrived at the Dungeon Boss!'),
-	nl,
-	write('Ssh! A dragon is sleeping here!'),
-	nl,
-	!.
-
-arrive :-
-	write('Nothing in here.'),
-	nl,
-	write('Keep walking adventurer!'),
-	nl,
-	!.
-
-found :-
-	random(0,5,Found),
-	/* decide sbg rule masuk ke battle mechanism */
-	(Found =:= 1 -> decide; arrive).
-	
-/* command perpindahan player */
+% move
 w :-
-	\+playing(_), /* pastiin  sama rulesnya kyk main.pl */
-	write('You need to type "start." first before using map.'),
-	nl,
-	!.
+	\+selected,
+	write('Choose your job first before starting your adventure!'),!.
 w :-
-	\+selected, /* pastiin sama rulesnya kyk player.pl */
-	write('Choose your job first before starting your adventure!'),
-	nl,
-	!.
+	battle(_),
+	write('Finish your battle first!!'),!.
 w :-
-	inbattle(_), 
-	write('Finish your battle first!'),
-	nl,
-	!.
+	selected,
+	pilih(1),
+	write('You found an enemy!!!'),nl.
+
+w :-
+	\+playing(_),
+	write('this command can only be used after the game starts.'), nl,
+	write('use "start." to start the Tokemon Game!'), nl, !.
 w :-
 	selected,
 	player(_,Y),
 	Y =:= 1,
-	write('Oops! Collided with a barrier! Try moving to another direction!'),
-	nl,
-	!.
+	write('Oops! You just collided with a barrier! Try moving another direction.'),nl,!.
 w :-
 	selected,
 	player(X,Y),
 	pagar(X,P),
-	Y =:= P+1,
-	write('Oops! Collided with a barrier! Try moving to another direction!'),
-	nl,
-	!.
-/* w :-
+	Q is P+1,
+	Y =:= Q,
+	write('Oops! You just collided with a barrier! Try moving another direction.'),nl,!.
+w :- 
 	selected,
-	pilih(1),
-	write('You have found an enemy!'),
-	nl,
-	% rule generate random enemy
-	% rule masuk ke battle mechanism,
-	!. */
-w :-
-	selected, 
 	retract(player(X,Y)),
 	Y > 1,
-	NewY is Y-1,
-	asserta(player(X,NewY)),
-	write('You walked north'),
-	nl,
-	found, % sama kyk appear wkwkw
+	NewY is Y - 1,
+	write('You move north'), nl,
+	asserta(player(X, NewY)), appear,
 	!.
+a :-
+	\+selected,
+	write('Choose your job first before starting your adventure!'),!.
 
 a :-
-	\+playing(_), /* pastiin  sama rulesnya kyk main.pl */
-	write('You need to type "start." first before using map.'),
-	nl,
-	!.
+	selected,
+	pilih(1),
+	write('You found an enemy!!!'),nl.
 a :-
-	\+selected, /* pastiin sama rulesnya kyk player.pl */
-	write('Choose your job first before starting your adventure!'),
-	nl,
-	!.
+	battle(_),
+	write('Finish your battle first!!'),!.
 a :-
-	inbattle(_), 
-	write('Finish your battle first!'),
-	nl,
-	!.
+	\+playing(_),
+	write('this command can only be used after the game starts.'), nl,
+	write('use "start." to start the Tokemon Game!'), nl, !.
 a :-
 	selected,
 	player(X,_),
 	X =:= 1,
-	write('Oops! Collided with a barrier! Try moving to another direction!'),
-	nl,
-	!.
+	write('Oops! You just collided with a barrier! Try moving another direction.'),nl,!.
 a :-
 	selected,
 	player(X,Y),
 	pagar(P,Y),
-	X =:= P+1,
-	write('Oops! Collided with a barrier! Try moving to another direction!'),
-	nl,
+	Q is P+1,
+	X =:= Q,
+	write('Oops! You just collided with a barrier! Try moving another direction.'),nl,!.
+a :- 
+	selected,
+	retract(player(X,Y)),
+	NewX is X - 1,
+	write('You move west'), nl,
+	asserta(player(NewX, Y)), appear, 
 	!.
-/* a :-
+s :-
+	\+selected,
+	write('Choose your job first before starting your adventure!'),!.
+s :-
+	battle(_),
+	write('Finish your battle first!!'),!.
+s :-
 	selected,
 	pilih(1),
-	write('You have found an enemy!'),
-	nl,
-	% rule generate random enemy
-	% rule masuk ke battle mechanism,
-	!. */
-a :-
-	selected, 
-	retract(player(X,Y)),
-	NewX is X-1,
-	asserta(player(NewX,Y)),
-	write('You walked west'),
-	nl,
-	found, % sama kyk appear wkwkw
-	!.
-
+	write('You found an enemy!!!'),nl.
 s :-
-	\+playing(_), /* pastiin  sama rulesnya kyk main.pl */
-	write('You need to type "start." first before using map.'),
-	nl,
-	!.
-s :-
-	\+selected, /* pastiin sama rulesnya kyk player.pl */
-	write('Choose your job first before starting your adventure!'),
-	nl,
-	!.
-s :-
-	inbattle(_), 
-	write('Finish your battle first!'),
-	nl,
-	!.
+	\+playing(_),
+	write('this command can only be used after the game starts.'), nl,
+	write('use "start." to start the Tokemon Game!'), nl, !.
 s :-
 	selected,
 	player(_,Y),
-	tinggi(P),
+	tinggipeta(P),
 	Y =:= P,
-	write('Oops! Collided with a barrier! Try moving to another direction!'),
-	nl,
-	!.
+	write('Oops! You just collided with a barrier! Try moving another direction.'),nl,!.
 s :-
 	selected,
 	player(X,Y),
 	pagar(X,P),
-	Y =:= P-1,
-	write('Oops! Collided with a barrier! Try moving to another direction!'),
-	nl,
+	Q is P-1,
+	Y =:= Q,
+	write('Oops! You just collided with a barrier! Try moving another direction.'),nl,!.
+s :- 
+	selected,
+	retract(player(X,Y)),
+	NewY is Y + 1,
+	write('You move South!'), nl,
+	asserta(player(X, NewY)),  appear, 
 	!.
-/* s :-
+d :-
+	\+selected,
+	write('Choose your job first before starting your adventure!'),!.
+d :-
+	battle(_),
+	write('Finish your battle first!!'),!.
+d :-
 	selected,
 	pilih(1),
-	write('You have found an enemy!'),
-	nl,
-	% rule generate random enemy
-	% rule masuk ke battle mechanism,
-	!. */
-s :-
-	selected, 
-	retract(player(X,Y)),
-	NewY is Y+1,
-	asserta(player(X,NewY)),
-	write('You walked south'),
-	nl,
-	found, % sama kyk appear wkwkw
-	!.
-
+	write('You found an enemy!!!'),nl.
 d :-
-	\+playing(_), /* pastiin  sama rulesnya kyk main.pl */
-	write('You need to type "start." first before using map.'),
-	nl,
-	!.
-d :-
-	\+selected, /* pastiin sama rulesnya kyk player.pl */
-	write('Choose your job first before starting your adventure!'),
-	nl,
-	!.
-d :-
-	inbattle(_), 
-	write('Finish your battle first!'),
-	nl,
-	!.
+	\+playing(_),
+	write('this command can only be used after the game starts.'), nl,
+	write('use "start." to start the Tokemon Game!'), nl, !.
 d :-
 	selected,
 	player(X,_),
-	lebar(P);
-	X =:= P,
-	write('Oops! Collided with a barrier! Try moving to another direction!'),
-	nl,
-	!.
+	lebarpeta(Q),
+	X =:= Q,
+	write('Oops! You just collided with a barrier! Try moving another direction.'),nl,!.
 d :-
 	selected,
 	player(X,Y),
 	pagar(P,Y),
-	X =:= P-1,
-	write('Oops! Collided with a barrier! Try moving to another direction!'),
-	nl,
-	!.
-/* d :-
+	Q is P-1,
+	X =:= Q,
+	write('Oops! You just collided with a barrier! Try moving another direction.'),nl,!.
+d :- 
 	selected,
-	pilih(1),
-	write('You have found an enemy!'),
-	nl,
-	% rule generate random enemy
-	% rule masuk ke battle mechanism,
-	!. */
-d :-
-	selected, 
 	retract(player(X,Y)),
-	NewX is X+1,
-	asserta(player(NewX,Y)),
-	write('You walked east'),
-	nl,
-	found, % sama kyk appear wkwkw
+	NewX is X + 1,
+	write('You moved east!'), nl,
+	asserta(player(NewX, Y)), appear,
 	!.
+
+appear :-
+	random(1,7,Appear),
+	(Appear =:= 5 -> decide; nothing).
+
+nothing :-
+	player(X,Y),
+	store(X,Y),
+	write('You are on the Store'), nl,nl,!.
+
+nothing :-
+	player(X,Y),
+	quest(X,Y),
+	write('You are on the Quest Office'), nl,nl,!.
+
+nothing :-
+	write('There is nothing in here'), nl,nl.
