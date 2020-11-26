@@ -6,7 +6,7 @@
 :- dynamic(defense/1).
 :- dynamic(exp/1).
 :- dynamic(gold/1).
-:- dynamic(playing/0).
+:- dynamic(player/2).
 
 
 
@@ -88,3 +88,33 @@ choose_character :-
     (X =:= 1 -> write('Welcome to the adventure, Swordman!'), nl, write('You got a Wooden Sword, Wooden Armor, and 5 Health Potion'), nl, write('Lets finish the job!'), nl, swordman;
     X =:= 2 -> write('Welcome to the adventure, Archer!'), nl, write('You got a Wooden Bow, Wooden Armor, and 5 Health Potion'), nl, write('Lets finish the job!'), nl, archer;
     X =:= 3 -> write('Welcome to the adventure, Sorcerer!'), nl, write('You got a Magic Book, Wooden Armor, and 5 Health Potion'), nl, write('Lets finish the job!'), nl, sorcerer).
+
+player_place :-
+    asserta(player(1,1)).
+
+/*player_status :-
+    write ('Your current status :'), nl,
+    (swordman ->
+        write('Job : Swordman'), nl,
+        write('Level : ', level(Level)), nl,
+        write('Health : ', health(Health),'/1000'), nl,
+        write('Attack : ', attack(Attack)), nl,
+        write('Defense : ', defense(Defense)), nl,
+        write('Exp : ', exp(Exp), '/300'), nl,
+        write('Gold : ', gold(Gold));
+    archer ->
+        write('Job : Swordman'), nl,
+        write('Level : ', level(Level)), nl,
+        write('Health : ', health(Health),'/1000'), nl,
+        write('Attack : ', attack(Attack)), nl,
+        write('Defense : ', defense(Defense)), nl,
+        write('Exp : ', exp(Exp), '/300'), nl,
+        write('Gold : ', gold(Gold));
+    sorcerer ->
+        write('Job : Swordman'), nl,
+        write('Level : ', level(Level)), nl,
+        write('Health : ', health(Health),'/1000'), nl,
+        write('Attack : ', attack(Attack)), nl,
+        write('Defense : ', defense(Defense)), nl,
+        write('Exp : ', exp(Exp), '/300'), nl,
+        write('Gold : ', gold(Gold))).*/
