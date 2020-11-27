@@ -1,4 +1,4 @@
-:- dynamic(takeaquest/3).
+:- dynamic(takequest/3).
 
 take_q :-
  write('Take your quest here!'),nl,
