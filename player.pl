@@ -16,7 +16,7 @@ character(archer).
 character(sorcerer).
 
 char_swordman :-
-    asserta(job(X,swordman)),
+    asserta(job(A,swordman)),
     asserta(level(1)),
     asserta(health(1000)),
     asserta(attack(100)),
@@ -25,7 +25,7 @@ char_swordman :-
     asserta(gold(1000)).
 
 char_archer :-
-    asserta(job(X,archer)),
+    asserta(job(A,archer)),
     asserta(level(1)),
     asserta(health(1000)),
     asserta(attack(110)),
@@ -34,7 +34,7 @@ char_archer :-
     asserta(gold(1000)).
 
 char_sorcerer :-
-    asserta(job(X,sorcerer)),
+    asserta(job(A,sorcerer)),
     asserta(level(1)),
     asserta(health(1000)),
     asserta(attack(105)),
@@ -49,9 +49,9 @@ choose_character :-
     write('2. Archer'), nl,
     write('3. Sorcerer'), nl,
     read(X), nl,
-    (X =:= 1 -> write('Welcome to the adventure, Swordman!'), nl, write('You got a Wooden Sword, Wooden Armor, and 5 Health Potion'), nl, write('Lets finish the job!'), nl, character(swordman), char_swordman;
-    X =:= 2 -> write('Welcome to the adventure, Archer!'), nl, write('You got a Wooden Bow, Wooden Armor, and 5 Health Potion'), nl, write('Lets finish the job!'), nl, character(archer), char_archer;
-    X =:= 3 -> write('Welcome to the adventure, Sorcerer!'), nl, write('You got a Magic Book, Wooden Armor, and 5 Health Potion'), nl, write('Lets finish the job!'), nl, character(sorcerer), char_sorcerer).
+    (X =:= 1 -> write('Welcome to the adventure, Swordman!'), nl, write('You got a Wooden Sword, Wooden Armor, and 5 Health Potion'), nl, write('Lets finish the job!'), nl, character(swordman), char_swordman, inventory_swordman;
+    X =:= 2 -> write('Welcome to the adventure, Archer!'), nl, write('You got a Wooden Bow, Wooden Armor, and 5 Health Potion'), nl, write('Lets finish the job!'), nl, character(archer), char_archer, inventory_archer;
+    X =:= 3 -> write('Welcome to the adventure, Sorcerer!'), nl, write('You got a Magic Book, Wooden Armor, and 5 Health Potion'), nl, write('Lets finish the job!'), nl, character(sorcerer), char_sorcerer, inventory_sorcerer).
 
 player_place :-
     asserta(player(1,1)).
