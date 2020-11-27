@@ -6,7 +6,7 @@
 :- dynamic(player_status/3).
 :- dynamic(playerturn/1).
 :- dynamic(enemyfound/1).
-:- dynamic(takequest/3).
+
 
 take_q :-
         quest(_,_),
@@ -15,7 +15,9 @@ take_q :-
 	random(3,5,Y),
 	random(3,6,Z),
 	asserta(takequest(X,Y,Z)).
-	write('You got'),write(X),write('	
+	write('You got'),write(X),write('slime'),
+	write('You got'),write(Y),write('goblin'),nl,
+	write('You got'),write(X),write('wolf'),nl,!.
 
 startbattle :-
 	dungeon(_,_),
@@ -36,7 +38,7 @@ startbattle :-
 start(X):-
 	X=swordman,
 	inventory_swordman,
-	swordman,
+	char_swordman,
 	health(Hea),
 	attack(Att),
 	defense(Def),
@@ -46,7 +48,7 @@ start(X):-
 start(X):-
 	X=archer,
 	inventory_archer,
-	archer,
+	char_archer,
 	health(Hea),
 	attack(Att),
 	defense(Def),
@@ -56,7 +58,7 @@ start(X):-
 start(X):-
 	X=sorcerer,
 	inventory_sorcerer,
-	sorcerer,
+	char_sorcerer,
 	health(Hea),
 	attack(Att),
 	defense(Def),
@@ -295,7 +297,8 @@ check_enemydead :-
 	Hea =< 0,
 	retract(inbattle(_,_,_)),
 	asserta(inbattle(_,_,0)),
-	write('The enemy has fallen.'),!.
+	write('The enemy has fallen.'),
+	quest_end,!.
 
 check_enemydead :-
 	enemy(_,_,Hea,_,_),
@@ -307,11 +310,68 @@ checkattackenemy :-
     Att =< 0,
     retract(inbattle(_,_,_)),
     asserta(inbattle(_,_,0)),
-    write('Your enemy cannot attack anymore. YOU WON.'),nl,!.
+    write('Your enemy cannot attack anymore. YOU WON.'),nl,
+    quest_end,!.
 
 checkattackenemy:-
    enemy(_,_,_,Att,_),
    Att > 0,!.
+
+quest_end :-
+	enemy(Name,_,_,_,_),
+	Name=slime,
+	/* Ditambahin attack, EXP sama gold */
+	retract(attack(A)),
+	retract(expo(E)),
+	retract(gold(G)),
+	NA is A + 100,
+	NE is E + 100,
+	NG is G + 100,
+	asserta(attack(NA)),
+	asserta(expo(NE)),
+	asserta(gold(NG)),
+	retract(takequest(X,Y,Z)), /*Apa ajalah pokoknya penanda*/
+	NewX is X - 1,
+	asserta(takequest(NewX,Y,Z)),!.
+
+quest_end :-
+	enemy(Name,_,_,_,_),
+	Name=goblin,
+	/* Ditambahin attack, EXP sama gold */
+	retract(attack(A)),
+	retract(expo(E)),
+	retract(gold(G)),
+	NA is A + 100,
+	NE is E + 100,
+	NG is G + 100,
+	asserta(attack(NA)),
+	asserta(expo(NE)),
+	asserta(gold(NG)),
+	retract(takequest(X,Y,Z)), /*Apa ajalah pokoknya penanda*/
+	NewY is Y - 1,
+	asserta(takequest(X,NewY,Z)),!.
+	
+quest_end :-
+	enemy(Name,_,_,_,_),
+	Name=wolf,
+	/* Ditambahin attack, EXP sama gold */
+	retract(attack(A)),
+	retract(expo(E)),
+	retract(gold(G)),
+	NA is A + 100,
+	NE is E + 100,
+	NG is G + 100,
+	asserta(attack(NA)),
+	asserta(expo(NE)),
+	asserta(gold(NG)),
+	retract(takequest(X,Y,Z)),
+	NewZ is Z - 1,
+	asserta(takequest(X,Y,NewZ)),!.
+	
+quest_end :-
+	enemy(Name,_,_,_,_),
+	Name=boss,
+	write('YOU SUCCESSFULLY WON THE GAME.'),halt,!.
 
 check_playerdead :-
 	player_status(Hea,_,_),
@@ -332,7 +392,17 @@ checkattack :-
     W = 0,
     retract(inbattle(_,_,_)),
     asserta(inbattle(_,_,0)),
-    write('You cannot attack anymore. YOU LOSE.'),nl,!.
+    write('You cannot attack anymore. YOU LOSE.'),
+    /* Tetep ditambahin attack, EXP sama gold, tapi dikit */
+    retract(attack(A)),
+    retract(expo(E)),
+    retract(gold(G)),
+    NA is A + 10,
+    NE is E + 10,
+    NG is G + 10,
+    asserta(attack(NA)),
+    asserta(expo(NE)),
+    asserta(gold(NG)),nl,!.
 
 checkattack:-
     player_status(_,Att,_),
