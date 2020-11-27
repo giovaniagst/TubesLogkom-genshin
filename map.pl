@@ -1,5 +1,6 @@
 :- include('battle.pl').
 :- include('shop.pl').
+:- include('quest.pl').
 
 :- dynamic(playing/1).
 :- dynamic(lebarpeta/1).
@@ -9,6 +10,9 @@
 :- dynamic(quest/2).
 :- dynamic(enemy/2).
 :- dynamic(dungeon/2).
+:- dynamic(bossappear/1).
+:- dynamic(takeaquest/1).
+:- dynamic(enemyappear/1).
 
 lebarpeta(15).
 tinggipeta(15).
@@ -193,7 +197,8 @@ appear :-
 	random(1,7,Appear),
 	(Appear =:= 5 -> 
 		write('You found an enemy!!!'),
-		startbattle; 
+		asserta(enemyappear(1)),
+		startbattle;
 		nothing).
 
 nothing :-
@@ -204,12 +209,16 @@ nothing :-
 nothing :-
 	player(X,Y),
 	quest(X,Y),
-	write('You are on the Quest Office'), nl,nl,!.
+	write('You are on the Quest Office'), nl,nl,!,
+	asserta(takeaquest(1)),
+	take_q,!.
 	
 nothing :-
 	player(X,Y),
 	dungeon(X,Y),
-	write('You are on the Dungeon Boss'), nl,nl,!.
-
+	write('You are on the Dungeon Boss'), nl,nl,
+	asserta(bossappear(1)),
+	startbattle,!.
+	
 nothing :-
 	write('There is nothing in here'), nl,nl.
