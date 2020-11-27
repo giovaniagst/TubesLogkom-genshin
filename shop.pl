@@ -31,16 +31,16 @@ equipment(11,health_potion).
 /** SHOP **/
 shop_header:-
     write(''),nl,
-    write('                 dP                         '),nl,
-    write('                 88                         '),nl,
-    write('        .d8888b. 88d888b. .d8888b. 88d888b. '),nl,
-    write('        Y8ooooo. 88`  `88 88`  `88 88`  `88 '),nl,
-    write('              88 88    88 88.  .88 88.  .88 '),nl,
-    write('        `88888P` dP    dP `88888P` 88Y888P` '),nl,
-    write('                                   88       '),nl,
-    write('        Selamat datang di Miniso   dP       '),nl.
+    write('                dP                         '),nl,
+    write('                88                         '),nl,
+    write('       .d8888b. 88d888b. .d8888b. 88d888b. '),nl,
+    write('       Y8ooooo. 88`  `88 88`  `88 88`  `88 '),nl,
+    write('             88 88    88 88.  .88 88.  .88 '),nl,
+    write('       `88888P` dP    dP `88888P` 88Y888P` '),nl,
+    write('                                  88       '),nl,
+    write('       Selamat datang di Miniso   dP       '),nl.
 
-shop1:-
+shop:-
     shop_header,
     asserta(belanja(1)),
     gold(X),
@@ -61,13 +61,13 @@ shop1:-
     write('Input number menu(1/2) : '), read(Y), number_menu(Y).
 /* apabila memilih equipment gacha maka akan di-generate suatu equipment acak */
 
-shop1:-
+shop:-
     belanja(_),
     write('Do you need anything else? (y/n) : '),
     read(X),!,
     (X==n -> retractall(belanja(_)),
     write(''),nl,
-    write('Exited from shop.') ; shop1).
+    write('Exited from shop.') ; shop).
 
 /** MEMBACA INPUT USER **/
 number_menu(1):- /* ketika gold cukup untuk gacha */
@@ -81,10 +81,10 @@ number_menu(1):- /* ketika gold cukup untuk gacha */
     write(''),nl,
     (Get==1 ->
         write('Gotcha, a '), write(Y), write(' is ready to be yours!'),nl,
-        write('Your remaining gold is '), write(X1),!;
+        write('Your remaining gold is '), write(X1),nl,!;
     Get==0 ->
-        write('Kamu memperoleh equipment yang tidak sesuai dengan character'),nl,
-        write('Gacha failed'),nl,
+        write('Gacha Zonk'),nl,
+        write('Kamu memperoleh equipment yang tidak sesuai dengan character-mu'),nl,
         write('Your remaining gold is '), write(X1)).
 
     
