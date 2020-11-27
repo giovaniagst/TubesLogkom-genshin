@@ -206,7 +206,7 @@ nothing :-
 	player(X,Y),
 	store(X,Y),
 	write('You are on the Store'), nl,nl,
-	write('To access store, use command "shop1."'), nl,nl, !.
+	write('To access store, use command "shop."'), nl,nl, !.
 
 nothing :-
 	\+takeaquest(1),
