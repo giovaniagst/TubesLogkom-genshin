@@ -1,4 +1,5 @@
 :- include('inventory.pl').
+:- include('quest.pl').
 :- include('enemy.pl').
 :- include('player.pl').
 :- dynamic(amountofenemy/1).
@@ -205,16 +206,7 @@ specialattack_able(X):-
     write('- attack.'),nl,
     write('- use_potion.'),!.
 
-enemyattack:-
-    enemy(_,_,_,A,_),
-    A =< 0,
-    retract(inbattle(_,_,_)),
-    asserta(inbattle(_,_,0)),
-    write('Your enemy cannot attack anymore. YOU WON.'),nl,
-    whichTurn,!.
-
 enemyattack :-
-    enemy(Name,_,_,A,_),
     inbattle(_,_,1),
     playerturn(0),
     retract(enemy(Name,_,H,A,D)),
@@ -238,24 +230,6 @@ enemyattack :-
     check_playerdead,
     whichTurn,!.
 
-enemyattack :-
-    enemy(Name,_,_,A,_),
-    inbattle(_,_,1),
-    playerturn(0),
-    retract(enemy(Name,_,H,A,D)),
-    write('BOOM!'),nl,
-    random(0,A,Dmg),
-    write(Dmg),
-    write(' damage hits you'),nl,
-    retract(player_status(Hea,Att,Def)),
-    Def =< 0,
-    NewA is A - Dmg,
-    asserta(enemy(Name,_,H,NewA,D)),
-    NewHea is Hea - Dmg,
-    asserta(player_status(NewHea,Att,Def)),
-    check_playerdead,
-    whichTurn,!.
-
 check_enemydead :-
 	enemy(_,_,Hea,_,_),
 	Hea =< 0,
@@ -266,24 +240,23 @@ check_enemydead :-
 
 check_enemydead :-
 	enemy(_,_,Hea,_,_),
-	Hea > 0,
-        checkattackenemy,!.
+	Hea > 0,!.
 
 checkattackenemy :-
-    enemy(_,_,_,Att,_),
-    Att =< 0,
+   enemy(_,_,_,A,_),
+    A =< 0,
     retract(inbattle(_,_,_)),
     asserta(inbattle(_,_,0)),
     write('Your enemy cannot attack anymore. YOU WON.'),nl,
     quest_end,!.
 
-checkattackenemy:-
-   enemy(_,_,_,Att,_),
-   Att > 0,!.
+checkattackenemy :-
+   enemy(_,_,_,A,_),
+   A > 0, enemyattack,!.
 
 quest_end :-
 	enemy(Name,_,_,_,_),
-	Name = slime,
+	Name = 'slime',
 	/* Ditambahin attack, EXP sama gold */
 	retract(attack(A)),
 	retract(expo(E)),
@@ -307,7 +280,7 @@ quest_end :-
 
 quest_end :-
 	enemy(Name,_,_,_,_),
-	Name = goblin,
+	Name = 'goblin',
 	/* Ditambahin attack, EXP sama gold */
 	retract(attack(A)),
 	retract(expo(E)),
@@ -328,10 +301,10 @@ quest_end :-
 	write(' goblin'),nl,
 	write(Z),nl,
 	write(' wolf.'),nl,!.
-	
+
 quest_end :-
 	enemy(Name,_,_,_,_),
-	Name = wolf,
+	Name = 'wolf',
 	/* Ditambahin attack, EXP sama gold */
 	retract(attack(A)),
 	retract(expo(E)),
@@ -354,7 +327,7 @@ quest_end :-
 	
 quest_end :-
 	enemy(Name,_,_,_,_),
-	Name = boss,
+	Name = 'boss',
 	write('YOU SUCCESSFULLY WON THE GAME.'),halt,!.
 
 check_playerdead :-
@@ -366,14 +339,26 @@ check_playerdead :-
 
 check_playerdead:-
 	player_status(Hea,_,_),
-	Hea > 0,
-	checkattack,!.
+	Hea > 0,!.
 
-checkattack :-
+checkattack:-
+    player_status(_,Att,_),
+    Att > 0,
+    fight,!.
+
+checkattack:-
     player_status(_,Att,_),
     Att =< 0,
+    checkweapon,!.
+
+checkweapon:-
     haveE(_,W,_),
-    W = 0,
+    W > 0,
+    fight,!.
+
+checkweapon :-
+    haveE(_,W,_),
+    W =< 0,
     retract(inbattle(_,_,_)),
     asserta(inbattle(_,_,0)),
     write('You cannot attack anymore. YOU LOSE.'),
@@ -388,18 +373,6 @@ checkattack :-
     asserta(expo(NE)),
     asserta(gold(NG)),nl,!.
 
-checkattack:-
-    player_status(_,Att,_),
-    haveE(_,W,_),
-    Att > 0,
-    W =< 0,!. /*Gabisa pake inventory*/
-
-checkattack:-
-    player_status(_,Att,_),
-    haveE(_,W,_),
-    Att =< 0,
-    W > 0,!. /*Cuma bisa pake inventory*/
-
 whichTurn :-
 	inbattle(_,_,0),
 	write('END OF BATTLE!'),nl,!.
@@ -410,7 +383,7 @@ whichTurn :-
 	retract(playerturn(0)), 
 	asserta(playerturn(1)),
 	write('Your turn!'),nl,
-	fight,!.
+	checkattack,!.
 
 whichTurn :-
 	inbattle(_,_,1),
@@ -424,7 +397,7 @@ whichTurn :-
         write('- proceed.'),nl,!.
 
 proceed :-
-	enemyattack,!.
+	checkattackenemy,!.
 
 showdefense :-
 	haveA(Armor,Amount,_),
@@ -438,27 +411,27 @@ showdefense :-
         Amount=0,
 	write('Oopsie, nothing here.'),nl,
 	write('Cannot add your defense~~'),nl,nl,nl,
-        enemyattack,!.
+        checkattackenemy,!.
 
 usea(A) :-
     \+haveA(A,_,_),
     write('You do not have that your inventory.'),nl,
     write('Youll be redirected without adding defense.'),nl,
-    enemyattack,!.
+    checkattackenemy,!.
 
 usea(A) :-
     haveA(A,Amount,AddDef),
-    Amount\=0,
+    Amount \= 0,
     retract(player_status(Att,Hea,Def)),
     NewDef is Def + AddDef,
     asserta(player_status(Att,Hea,NewDef)), 
     write('Defense boosted, youre ready to go.'),nl,
     delFromInventory(A),
-    enemyattack,!.
+    checkattackenemy,!.
 
 usea(A):-
     haveA(A,Amount,_),
     Amount=0,
     write('OUT OF STOCK!'),nl,
     write('Youll be redirected without adding defense.'),nl,
-    enemyattack,!.
+    checkattackenemy,!.
