@@ -196,6 +196,7 @@ d :-
 appear :-
 	random(1,7,Appear),
 	(Appear =:= 5 -> 
+		takeaquest(1),
 		write('You found an enemy!!!'),
 		asserta(enemyappear(1)),
 		startbattle;
@@ -204,14 +205,23 @@ appear :-
 nothing :-
 	player(X,Y),
 	store(X,Y),
-	write('You are on the Store'), nl,nl,!.
+	write('You are on the Store'), nl,nl,
+	write('To access store, use command "shop1."'), nl,nl, !.
 
 nothing :-
+	\+takeaquest(1),
 	player(X,Y),
 	quest(X,Y),
-	write('You are on the Quest Office'), nl,nl,!,
+	write('You are on the Quest Office'), nl,nl,
 	asserta(takeaquest(1)),
 	take_q,!.
+	
+nothing :-
+	takeaquest(1),
+	player(X,Y),
+	quest(X,Y),
+	write('You have taken a quest!'), nl,nl,
+	!.
 	
 nothing :-
 	player(X,Y),
