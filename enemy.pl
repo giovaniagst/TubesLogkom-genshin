@@ -55,7 +55,7 @@ capitalize_enemy_name(X,Y):-
 
 /* Boss memiliki status yang sama sepanjang permainan (semisal level 70, attack 1000, defense 1000) */
 initBoss :-
-    asserta(boss(70,8000,800,1000)).
+    asserta(enemy(boss,70,8000,800,1000)).
 
 generate_boss :-
     initBoss,
