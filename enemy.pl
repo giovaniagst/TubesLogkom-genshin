@@ -10,7 +10,10 @@
 
 
 /** ENEMY FACT : enemy(nama,level,health,attack,defense) **/
-:- dynamic(enemy/5).
+:- dynamic(enemy/4).
+
+/** BOSS FACT : boss(level,health,attack,defense) */
+:- dynamic(boss/5).
 
 decide(X):-
 	X==3,
@@ -51,11 +54,16 @@ capitalize_enemy_name(X,Y):-
     Y = 'WOLF'.
 
 /* Boss memiliki status yang sama sepanjang permainan (semisal level 70, attack 1000, defense 1000) */
-/* generate_boss :-
-    write('Enemy`s Status'),nl, % gimana cara print kutipnya ya?
+initBoss :-
+    asserta(boss(70,8000,800,1000)).
+
+generate_boss :-
+    initBoss,
+    boss(X,B,C,D),
+    write('Enemy`s Status'),nl,
     write(''),nl,
     write('BOSS'),nl,
     write('Level : '),write(X),nl,
     write('Health : '),write(B),nl,
     write('Attack : '),write(C),nl,
-    write('Defense : '),write(D). */
+    write('Defense : '),write(D).
