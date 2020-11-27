@@ -8,6 +8,7 @@
 :- dynamic(enemyfound/1).
 
 startbattle :-
+        asserta(inbattle(_,_,0)),
 	bossappear(1),
 	write('You found yourself a'),nl,
         generate_boss,
@@ -25,17 +26,17 @@ startnow:-
 	attack(Att),
 	defense(Def),
 	asserta(player_status(Hea,Att,Def)),
-	enemyfound.
+	enemyfound,!.
 
 enemyfound:-
 	write('Fight like a knight, or run like a coward. Your choice.'),nl,
 	write('Choose.'), nl,
 	write('- startfight.'), nl,
-	write('- run.'), nl.
+	write('- run.'), nl,!.
 
 run :-
     random(0,1,X),
-    runluck(X).
+    runluck(X),!.
 
 runluck(X):-
     X = 1,
@@ -47,7 +48,7 @@ runluck(X):-
 runluck(X):-
     X = 0,
     write('Bad luck! You are not able to run~'),
-    startfight.
+    startfight,!.
 
 use_potion:-    
 	haveH(health_potion,Amount,_),
@@ -63,15 +64,16 @@ use_potion:-
 use_potion:-    
 	haveH(health_potion,Amount,_),
         Amount=0,
-        write('No health potion to use'),nl.
+        write('No health potion to use'),nl,!.
 
 startfight :-
+    retractall(inbattle(_,_,_)),
     asserta(inbattle(_,_,1)),
     asserta(playerturn(1)),
 	write('List of things you are able to do:'),nl,
 	write('- attack.'),nl,
 	write('- special_attack.'),nl,
-	write('- use_potion.'),nl.
+	write('- use_potion.'),nl,!.
 
 fight :-
     inbattle(_,_,1),
@@ -79,7 +81,7 @@ fight :-
 	write('List of things you are able to do:'),nl,
 	write('- attack.'),nl,
 	write('- special_attack.'),nl,
-	write('- use_potion.'),nl.
+	write('- use_potion.'),nl,!.
 
 attack :-
 	inbattle(_,_,0), /*Kalo misal ga lagi dalam pertarungan*/
@@ -89,7 +91,7 @@ attack :-
     inbattle(_,_,1),
     playerturn(1),
     write('> justattack. --- to proceed without equipments,'),nl,
-    write('> showinventory. --- if you want to use some to add your attack.'),nl.
+    write('> showinventory. --- if you want to use some to add your attack.'),nl,!.
 
 justattack :-
     retract(enemy(Name,_,Hea,Att,Def)),
@@ -146,14 +148,14 @@ use(W) :-
 use(W) :-
     \+haveE(W,_,_),
     write('You do not have that your inventory.'),nl,
-    write('Proceed with justattack or use another weapon.'),nl.
+    write('Proceed with justattack or use another weapon.'),nl,!.
 
 use(W):-
     haveE(W,Amount,_),
     Amount=0,
     write('OUT OF STOCK!'),nl,
     write('Youll be redirected to use attack without weapon.'),nl,
-    justattack.
+    justattack,!.
 
 showinventory:-
 	haveE(Weapon,Amount,_),
@@ -171,7 +173,7 @@ special_attack :-
     inbattle(_,_,1),
     playerturn(1),
     random(0,3,X),
-    specialattack_able(X).
+    specialattack_able(X),!.
 
 specialattack_able(X):-
     X=0,    
@@ -201,7 +203,7 @@ specialattack_able(X):-
     X\=0,
     write('Sorryyy, you are not able to use this now, choose other options.'),nl,
     write('- attack.'),nl,
-    write('- use_potion.').
+    write('- use_potion.'),!.
 
 enemyattack:-
     enemy(_,_,_,A,_),
@@ -260,7 +262,7 @@ check_enemydead :-
 	retract(inbattle(_,_,_)),
 	asserta(inbattle(_,_,0)),
 	write('The enemy has fallen.'),
-	quest_end,!.
+	battle_end,!.
 
 check_enemydead :-
 	enemy(_,_,Hea,_,_),
@@ -273,49 +275,44 @@ checkattackenemy :-
     retract(inbattle(_,_,_)),
     asserta(inbattle(_,_,0)),
     write('Your enemy cannot attack anymore. YOU WON.'),nl,
-    quest_end,!.
+    battle_end,!.
 
 checkattackenemy:-
    enemy(_,_,_,Att,_),
    Att > 0,!.
 
 quest_end :-
+	takequest(_,_,_),
 	enemy(Name,_,_,_,_),
 	Name=slime,
-	/* Ditambahin attack, EXP sama gold */
-	retract(attack(A)),
-	retract(expo(E)),
-	retract(gold(G)),
-	NA is A + 100,
-	NE is E + 100,
-	NG is G + 100,
-	asserta(attack(NA)),
-	asserta(expo(NE)),
-	asserta(gold(NG)),
 	retract(takequest(X,Y,Z)), /*Apa ajalah pokoknya penanda*/
 	NewX is X - 1,
 	asserta(takequest(NewX,Y,Z)),!.
 
 quest_end :-
+	takequest(_,_,_),
 	enemy(Name,_,_,_,_),
 	Name=goblin,
-	/* Ditambahin attack, EXP sama gold */
-	retract(attack(A)),
-	retract(expo(E)),
-	retract(gold(G)),
-	NA is A + 100,
-	NE is E + 100,
-	NG is G + 100,
-	asserta(attack(NA)),
-	asserta(expo(NE)),
-	asserta(gold(NG)),
 	retract(takequest(X,Y,Z)), /*Apa ajalah pokoknya penanda*/
 	NewY is Y - 1,
 	asserta(takequest(X,NewY,Z)),!.
 	
 quest_end :-
+	takequest(_,_,_),
 	enemy(Name,_,_,_,_),
 	Name=wolf,
+	NewZ is Z - 1,
+	asserta(takequest(X,Y,NewZ)),!.
+	
+quest_end :-
+	\+takequest(_,_,_),!.
+
+battle_end :-
+	enemy(Name,_,_,_,_),
+	Name=boss,
+	write('YOU SUCCESSFULLY WON THE GAME.'),halt,!.	
+
+battle_end :-
 	/* Ditambahin attack, EXP sama gold */
 	retract(attack(A)),
 	retract(expo(E)),
@@ -326,14 +323,7 @@ quest_end :-
 	asserta(attack(NA)),
 	asserta(expo(NE)),
 	asserta(gold(NG)),
-	retract(takequest(X,Y,Z)),
-	NewZ is Z - 1,
-	asserta(takequest(X,Y,NewZ)),!.
-	
-quest_end :-
-	enemy(Name,_,_,_,_),
-	Name=boss,
-	write('YOU SUCCESSFULLY WON THE GAME.'),halt,!.
+	quest_end,!.
 
 check_playerdead :-
 	player_status(Hea,_,_),
@@ -379,6 +369,10 @@ checkattack:-
     W > 0,!. /*Cuma bisa pake inventory*/
 
 whichTurn :-
+	inbattle(_,_,0),
+	write('END OF BATTLE!'),nl,!.
+
+whichTurn :-
 	inbattle(_,_,1),
 	playerturn(0),
 	retract(playerturn(0)), 
@@ -396,10 +390,6 @@ whichTurn :-
         write('- showdefense.'),nl,
         write('or else,'),nl,
         write('- proceed.'),nl,!.
-
-whichTurn :-
-	inbattle(_,_,0),
-	write('END OF BATTLE!'),nl,!.
 
 proceed :-
 	enemyattack,!.
