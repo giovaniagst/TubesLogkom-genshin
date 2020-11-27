@@ -59,7 +59,7 @@ initBoss :-
 
 generate_boss :-
     initBoss,
-    enemy(boss,A,B,C,D)),
+    enemy(boss,A,B,C,D),
     write('Enemy`s Status'),nl,
     write(''),nl,
     write('BOSS'),nl,
