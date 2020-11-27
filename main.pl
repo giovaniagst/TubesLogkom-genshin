@@ -10,10 +10,19 @@ start :-
     playing(_),!.
 
 start:-
-   /* nanti ada tulisan genshin */
+    write('%%%%%%%%%      %%%%%%%%%%%%    %%%%%         %%%    %%%%%%%%%%%     %%%      %%%   %%%%%%%%%   %%%%%         %%%'), nl,
+    write('%%%%%%%%%%     %%%%%%%%%%%%    %%% %%%       %%%   %%%%%%%%%%%%%    %%%      %%%   %%%%%%%%%   %%% %%%       %%%'), nl,
+    write('%%      %%     %%%             %%%  %%%      %%%    %%%%            %%%      %%%      %%%      %%%  %%%      %%%'), nl,
+    write('%%             %%%             %%%   %%%     %%%      %%%%%         %%%      %%%      %%%      %%%   %%%     %%%'), nl,
+    write('%%    %%%%%    %%%%%%%%%%%%    %%%    %%%    %%%        %%%%%%      %%%%%%%%%%%%      %%%      %%%    %%%    %%%'), nl,
+    write('%%    %%%%%%   %%%%%%%%%%%%    %%%     %%%   %%%           %%%%%    %%%%%%%%%%%%      %%%      %%%     %%%   %%%'), nl,
+    write('%%        %%   %%%             %%%      %%%  %%%             %%%%%  %%%      %%%      %%%      %%%      %%%  %%%'), nl,
+    write('%%        %%   %%%             %%%       %%% %%%            %%%%%%  %%%      %%%      %%%      %%%       %%% %%%'), nl,
+    write('%%%%%%%%%%%    %%%%%%%%%%%%    %%%        %%%%%%     %%%%%%%%%%%%   %%%      %%%   %%%%%%%%%   %%%        %%%%%%'), nl,
+    write('%%%%%%%%%%     %%%%%%%%%%%%    %%%         %%%%%      %%%%%%%%%%    %%%      %%%   %%%%%%%%%   %%%         %%%%%'), nl,
     write(''), nl,
     write(''), nl,
-    write('Lets play the game'), nl,
+    write('Lets play the game!'), nl,
     write(''), nl,
     write(''), nl,
     write('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'), nl,
@@ -51,25 +60,7 @@ help :-
     write('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'), nl.
 
 inventory :-
-    show_inventory.
-/*status :-
-    player_status.*/
+    show_inventory(X).
 
-/*inventory :-
-    write('This is your inventory'), nl,
-    character(Job),
-    (Job == swordman ->
-        inventory_sowrdman,
-        have(Nama,Jumlah),
-        (Jumlah =\= 0 ->
-            write(Jumlah), write(Nama), nl);
-    Job == archer ->
-        inventory_archer,
-        have(Nama,Jumlah),
-        (Jumlah =\= 0 ->
-            write(Jumlah), write(Nama), nl);
-    Job == sorcerer ->
-        inventory_sorcerer,
-        have(Nama,Jumlah),
-        (Jumlah =\= 0 ->
-            write(Jumlah), write(Nama), nl)).*/
+status :-
+    player_status(X).
