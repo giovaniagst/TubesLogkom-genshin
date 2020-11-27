@@ -262,7 +262,7 @@ check_enemydead :-
 	retract(inbattle(_,_,_)),
 	asserta(inbattle(_,_,0)),
 	write('The enemy has fallen.'),
-	battle_end,!.
+	quest_end,!.
 
 check_enemydead :-
 	enemy(_,_,Hea,_,_),
@@ -275,55 +275,87 @@ checkattackenemy :-
     retract(inbattle(_,_,_)),
     asserta(inbattle(_,_,0)),
     write('Your enemy cannot attack anymore. YOU WON.'),nl,
-    battle_end,!.
+    quest_end,!.
 
 checkattackenemy:-
    enemy(_,_,_,Att,_),
    Att > 0,!.
 
 quest_end :-
-	takequest(_,_,_),
 	enemy(Name,_,_,_,_),
-	Name=slime,
-	retract(takequest(X,Y,Z)), /*Apa ajalah pokoknya penanda*/
-	NewX is X - 1,
-	asserta(takequest(NewX,Y,Z)),!.
-
-quest_end :-
-	takequest(_,_,_),
-	enemy(Name,_,_,_,_),
-	Name=goblin,
-	retract(takequest(X,Y,Z)), /*Apa ajalah pokoknya penanda*/
-	NewY is Y - 1,
-	asserta(takequest(X,NewY,Z)),!.
-	
-quest_end :-
-	takequest(_,_,_),
-	enemy(Name,_,_,_,_),
-	Name=wolf,
-	NewZ is Z - 1,
-	asserta(takequest(X,Y,NewZ)),!.
-	
-quest_end :-
-	\+takequest(_,_,_),!.
-
-battle_end :-
-	enemy(Name,_,_,_,_),
-	Name=boss,
-	write('YOU SUCCESSFULLY WON THE GAME.'),halt,!.	
-
-battle_end :-
+	Name = slime,
 	/* Ditambahin attack, EXP sama gold */
 	retract(attack(A)),
 	retract(expo(E)),
 	retract(gold(G)),
-	NA is A + 100,
-	NE is E + 100,
-	NG is G + 100,
+	NA is A + 300,
+	NE is E + 300,
+	NG is G + 300,
 	asserta(attack(NA)),
 	asserta(expo(NE)),
 	asserta(gold(NG)),
-	quest_end,!.
+	retract(takequest(X,Y,Z)), /*Apa ajalah pokoknya penanda*/
+	NewX is X - 1,
+	asserta(takequest(NewX,Y,Z)),
+	write('Nice, now your quest is:'),nl,
+	write(NewX),
+	write(' slime'),nl,
+	write(Y),
+	write(' goblin'),nl,
+	write(Z),nl,
+	write(' wolf.'),nl,!.
+
+quest_end :-
+	enemy(Name,_,_,_,_),
+	Name = goblin,
+	/* Ditambahin attack, EXP sama gold */
+	retract(attack(A)),
+	retract(expo(E)),
+	retract(gold(G)),
+	NA is A + 300,
+	NE is E + 300,
+	NG is G + 300,
+	asserta(attack(NA)),
+	asserta(expo(NE)),
+	asserta(gold(NG)),
+	retract(takequest(X,Y,Z)), /*Apa ajalah pokoknya penanda*/
+	NewY is Y - 1,
+	asserta(takequest(NewX,Y,Z)),
+	write('Nice, now your quest is:'),nl,
+	write(X),
+	write(' slime'),nl,
+	write(NewY),
+	write(' goblin'),nl,
+	write(Z),nl,
+	write(' wolf.'),nl,!.
+	
+quest_end :-
+	enemy(Name,_,_,_,_),
+	Name = wolf,
+	/* Ditambahin attack, EXP sama gold */
+	retract(attack(A)),
+	retract(expo(E)),
+	retract(gold(G)),
+	NA is A + 300,
+	NE is E + 300,
+	NG is G + 300,
+	asserta(attack(NA)),
+	asserta(expo(NE)),
+	asserta(gold(NG)),
+	retract(takequest(X,Y,Z)),
+	NewZ is Z - 1,
+	write('Nice, now your quest is:'),nl,
+	write(X),
+	write(' slime'),nl,
+	write(Y),
+	write(' goblin'),nl,
+	write(NewZ),nl,
+	write(' wolf.'),nl,!.
+	
+quest_end :-
+	enemy(Name,_,_,_,_),
+	Name = boss,
+	write('YOU SUCCESSFULLY WON THE GAME.'),halt,!.
 
 check_playerdead :-
 	player_status(Hea,_,_),
@@ -349,9 +381,9 @@ checkattack :-
     retract(attack(A)),
     retract(expo(E)),
     retract(gold(G)),
-    NA is A + 10,
-    NE is E + 10,
-    NG is G + 10,
+    NA is A + 100,
+    NE is E + 100,
+    NG is G + 100,
     asserta(attack(NA)),
     asserta(expo(NE)),
     asserta(gold(NG)),nl,!.
