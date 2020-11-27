@@ -4,10 +4,12 @@
 :- include('inventory.pl').
 :- include('map.pl').
 
+:- dynamic(playing/1).
 
 
 start :-
-    playing(_),!.
+    playing(_),
+    write('You can only start the game once'),nl,!.
 
 start:-
     write('%%%%%%%%%      %%%%%%%%%%%%    %%%%%         %%%    %%%%%%%%%%%     %%%      %%%   %%%%%%%%%   %%%%%         %%%'), nl,
@@ -41,6 +43,7 @@ start:-
     write('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'), nl.
 
 start:-
+    asserta(playing(1)),
     choose_character,
     mulai, player_place.
 
