@@ -1,4 +1,5 @@
 :- include('battle.pl').
+:- include('shop.pl').
 
 :- dynamic(playing/1).
 :- dynamic(lebarpeta/1).
@@ -128,10 +129,7 @@ w :-
 a :-
 	inbattle(_,_,1),
 	write('Finish your battle first!!'),!.
-a :-
-	\+playing(_),
-	write('this command can only be used after the game starts.'), nl,
-	write('use "start." to start the Tokemon Game!'), nl, !.
+
 a :-
 	player(X,_),
 	X =:= 1,
