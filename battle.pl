@@ -6,10 +6,33 @@
 :- dynamic(player_status/3).
 :- dynamic(playerturn/1).
 :- dynamic(enemyfound/1).
+:- dynamic(takequest/3).
+
+take_q :-
+        quest(_,_),
+	write('Take your quest here!'),nl,
+	random(3,4,X),
+	random(3,5,Y),
+	random(3,6,Z),
+	asserta(takequest(X,Y,Z)).
+	write('You got'),write(X),write('	
 
 startbattle :-
-	write('Choose start(X), with X being swordman/archer/sorcherer.'),nl. /*Belum dihubungin sama yang lain*/
-  
+	dungeon(_,_),
+	write('You found yourself a'),nl,
+        generate_boss,
+	write('This will be the battle that determines your future...'),nl,
+	write('Write start(X), with X being your job (swordman/archer/sorcerer).'),nl.
+
+inquest :-
+	takequest(X,Y,Z),X>0,Y>0,Z>0.
+
+startbattle :-
+	inquest,
+	write('You found yourself a'),nl,
+	random_enemy,	
+	write('Choose start(X), with X being your job (swordman/archer/sorcerer).'),nl.
+ 
 start(X):-
 	X=swordman,
 	inventory_swordman,
@@ -18,8 +41,6 @@ start(X):-
 	attack(Att),
 	defense(Def),
 	asserta(player_status(Hea,Att,Def)),
-	write('You found yourself a'),nl,
-	random_enemy,nl,
 	enemyfound.
 
 start(X):-
@@ -30,8 +51,6 @@ start(X):-
 	attack(Att),
 	defense(Def),
 	asserta(player_status(Hea,Att,Def)),
-	write('You found yourself a'),nl,
-	random_enemy,nl,
 	enemyfound.
 
 start(X):-
@@ -42,9 +61,6 @@ start(X):-
 	attack(Att),
 	defense(Def),
     	asserta(player_status(Hea,Att,Def)),
-	inventory_sorcerer,
-	write('You found yourself a'),nl,
-	random_enemy,nl,
 	enemyfound.
 
 enemyfound:-
