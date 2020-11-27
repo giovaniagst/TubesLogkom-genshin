@@ -117,7 +117,7 @@ gacha(HasilGacha) :-
 input(HasilGacha,Get):-
     total(T), 
     T<100,
-    character(Char),
+    job(_,Char),
     Char == swordman,
 
     T1 is T+1,
@@ -163,7 +163,7 @@ input(HasilGacha,Get):-
 input(HasilGacha,Get):-
     total(T), 
     T<100,
-    character(Char),
+    job(_,Char),
     Char == archer,
 
     T1 is T+1,
@@ -203,7 +203,7 @@ input(HasilGacha,Get):-
 input(HasilGacha,Get):-
 total(T), 
     T<100,
-    character(Char),
+    job(_,Char),
     Char == sorcerer,
 
     T1 is T+1,
