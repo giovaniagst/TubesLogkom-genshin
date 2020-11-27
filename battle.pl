@@ -7,62 +7,24 @@
 :- dynamic(playerturn/1).
 :- dynamic(enemyfound/1).
 
-
-take_q :-
-        quest(_,_),
-	write('Take your quest here!'),nl,
-	random(3,4,X),
-	random(3,5,Y),
-	random(3,6,Z),
-	asserta(takequest(X,Y,Z)).
-	write('You got'),write(X),write('slime'),
-	write('You got'),write(Y),write('goblin'),nl,
-	write('You got'),write(X),write('wolf'),nl,!.
-
 startbattle :-
-	dungeon(_,_),
+	bossappear(1),
 	write('You found yourself a'),nl,
         generate_boss,
 	write('This will be the battle that determines your future...'),nl,
-	write('Write start(X), with X being your job (swordman/archer/sorcerer).'),nl.
-
-inquest :-
-	takequest(X,Y,Z),X>0,Y>0,Z>0.
+	write('Write startnow.'),nl,!.
 
 startbattle :-
-	inquest,
+	enemyappear(1),
 	write('You found yourself a'),nl,
 	random_enemy,	
-	write('Choose start(X), with X being your job (swordman/archer/sorcerer).'),nl.
+	write('Write startnow.'),nl,!.
  
-start(X):-
-	X=swordman,
-	inventory_swordman,
-	char_swordman,
+startnow:-
 	health(Hea),
 	attack(Att),
 	defense(Def),
 	asserta(player_status(Hea,Att,Def)),
-	enemyfound.
-
-start(X):-
-	X=archer,
-	inventory_archer,
-	char_archer,
-	health(Hea),
-	attack(Att),
-	defense(Def),
-	asserta(player_status(Hea,Att,Def)),
-	enemyfound.
-
-start(X):-
-	X=sorcerer,
-	inventory_sorcerer,
-	char_sorcerer,
-	health(Hea),
-	attack(Att),
-	defense(Def),
-    	asserta(player_status(Hea,Att,Def)),
 	enemyfound.
 
 enemyfound:-
