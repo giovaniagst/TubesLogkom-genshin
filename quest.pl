@@ -1,6 +1,6 @@
 :- dynamic(takeaquest/3).
 
-take_q :-,
+take_q :-
  write('Take your quest here!'),nl,
  random(3,4,X),
  random(3,5,Y),
