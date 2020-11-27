@@ -12,22 +12,31 @@
 /** ENEMY FACT : enemy(nama,level,health,attack,defense) **/
 :- dynamic(enemy/5).
 
-enemy(slime,3,1800,180,90).
-enemy(goblin,1,1200,100,70).
-enemy(wolf,2,1500,130,80).
+decide(X):-
+	X==3,
+	asserta(enemy(slime,3,1800,180,90)),!.
+
+decide(X):-
+	X==1,
+	asserta(enemy(goblin,1,1200,100,70)),!.
+
+decide(X):-
+	X==2,
+	asserta(enemy(wolf,2,1500,130,80)),!.
 
 /** RANDOMIZE ENEMY (based on enemy's level) **/ % sementara berdasarkan level
 random_enemy:-
-    random(1,3,X),
-    enemy(A,X,B,C,D),
-    capitalize_enemy_name(A,E),
+    random(1,4,X),
+    decide(X),!,
+    enemy(A,B,C,D,E),
+    capitalize_enemy_name(A,F),
     write('Enemy`s Status'),nl, % gimana cara print kutipnya ya?
     write(''),nl,
-    write(E),nl,
-    write('Level : '),write(X),nl,
-    write('Health : '),write(B),nl,
-    write('Attack : '),write(C),nl,
-    write('Defense : '),write(D).
+    write(F),nl,
+    write('Level : '),write(B),nl,
+    write('Health : '),write(C),nl,
+    write('Attack : '),write(D),nl,
+    write('Defense : '),write(E),!.
 
 capitalize_enemy_name(X,Y):-
     X == 'slime',
