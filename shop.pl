@@ -31,23 +31,33 @@ equipment(11,health_potion).
 /** SHOP **/
 shop_header:-
     write(''),nl,
-    write('         dP                         '),nl,
-    write('         88                         '),nl,
-    write('.d8888b. 88d888b. .d8888b. 88d888b. '),nl,
-    write('Y8ooooo. 88`  `88 88`  `88 88`  `88 '),nl,
-    write('      88 88    88 88.  .88 88.  .88 '),nl,
-    write('`88888P` dP    dP `88888P` 88Y888P` '),nl,
-    write('                           88       '),nl,
-    write('                           dP       '),nl.
+    write('                 dP                         '),nl,
+    write('                 88                         '),nl,
+    write('        .d8888b. 88d888b. .d8888b. 88d888b. '),nl,
+    write('        Y8ooooo. 88`  `88 88`  `88 88`  `88 '),nl,
+    write('              88 88    88 88.  .88 88.  .88 '),nl,
+    write('        `88888P` dP    dP `88888P` 88Y888P` '),nl,
+    write('                                   88       '),nl,
+    write('        Selamat datang di Miniso   dP       '),nl.
 
 shop1:-
     shop_header,
     asserta(belanja(1)),
     gold(X),
+    write(''),nl,
+    write(''),nl,
+    write('-----------------------------------------------'),nl,
+    write(''),nl,
+    write(''),nl,
+    write('               I T E M   L I S T               '),nl,
+    write(''),nl,
+    write('1.Equipment Gacha.....................1000 gold'),nl,
+    write('2.Health potion........................500 gold'),nl,
+    write('P.s Gacha beresiko zonk ...............wkwkwkwk'),nl,
+    write(''),nl,
+    write(''),nl,
+    write('-----------------------------------------------'),nl,
     write('Your current gold is '),write(X),nl,
-    write('What do you want to buy?'),nl,
-    write('1.   Equipment Gacha (1000 gold)'),nl,
-    write('2.   Health potion (500 gold)'),nl,
     write('Input number menu(1/2) : '), read(Y), number_menu(Y).
 /* apabila memilih equipment gacha maka akan di-generate suatu equipment acak */
 
