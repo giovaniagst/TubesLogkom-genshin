@@ -17,15 +17,15 @@
 
 decide(X):-
 	X==3,
-	asserta(enemy(slime,3,1800,180,90)),!.
+	asserta(enemy(slime,3,800,180,90)),!.
 
 decide(X):-
 	X==1,
-	asserta(enemy(goblin,1,1200,100,70)),!.
+	asserta(enemy(goblin,1,350,100,70)),!.
 
 decide(X):-
 	X==2,
-	asserta(enemy(wolf,2,1500,130,80)),!.
+	asserta(enemy(wolf,2,500,130,80)),!.
 
 /** RANDOMIZE ENEMY (based on enemy's level) **/ % sementara berdasarkan level
 random_enemy:-
@@ -55,7 +55,7 @@ capitalize_enemy_name(X,Y):-
 
 /* Boss memiliki status yang sama sepanjang permainan (semisal level 70, attack 1000, defense 1000) */
 initBoss :-
-    asserta(enemy(boss,70,8000,800,1000)).
+    asserta(enemy(boss,70,2000,800,1000)).
 
 generate_boss :-
     initBoss,
