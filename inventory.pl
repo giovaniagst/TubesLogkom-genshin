@@ -1,11 +1,14 @@
 /* file : inventory.pl */
 
+:- include('player.pl').
+
 :- dynamic(haveH/3).
 :- dynamic(haveE/3).
 :- dynamic(haveA/3).
 :- dynamic(total/1).
+:- dynamic(show_inventory/1).
 
-/* inventory awal masing-masing character */
+/* inventory masing-masing character */
 inventory_swordman :-
     asserta(total(7)),
     asserta(haveH(health_potion,5,1000)),
@@ -84,10 +87,22 @@ delFromInventory(Nama) :-
     asserta(total(Total1)).
 
 /* menampilkan inventory */
-show_inventory :-
-    inventory_swordman,
+show_inventory(X) :-
     write('This is your inventory :'), nl,
-    forall(haveE(Equipment,_,_),(write(Equipment),nl)).
+    write(''), nl,
+    character(X),
+    (X == sowrdman ->
+        forall(haveE(Equipment,Jumlah,_),(write(Jumlah),write(' '),write(Equipment),nl)),
+        forall(haveA(Armor,Jumlah,_),(write(Jumlah),write(' '),write(Armor),nl)),
+        forall(haveH(Health,Jumlah,_),(write(Jumlah),write(' '),write(Health),nl)),!;
+    X == archer ->
+        forall(haveE(Equipment,Jumlah,_),(write(Jumlah),write(' '),write(Equipment),nl)),
+        forall(haveA(Armor,Jumlah,_),(write(Jumlah),write(' '),write(Armor),nl)),
+        forall(haveH(Health,Jumlah,_),(write(Jumlah),write(' '),write(Health),nl)),!;
+    X == sorcerer ->
+        forall(haveE(Equipment,Jumlah,_),(write(Jumlah),write(' '),write(Equipment),nl)),
+        forall(haveA(Armor,Jumlah,_),(write(Jumlah),write(' '),write(Armor),nl)),
+        forall(haveH(Health,Jumlah,_),(write(Jumlah),write(' '),write(Health),nl)),!).
 
 
 
