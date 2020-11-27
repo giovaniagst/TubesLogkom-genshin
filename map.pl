@@ -1,7 +1,6 @@
 :- include('battle.pl').
 :- include('shop.pl').
 :- include('quest.pl').
-:- include('inventory.pl').
 
 :- dynamic(playing/1).
 :- dynamic(lebarpeta/1).
